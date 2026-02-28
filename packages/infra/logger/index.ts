@@ -14,6 +14,8 @@ const isTerminal = process.stdout.isTTY;
 const isDev = process.env.NODE_ENV !== 'production';
 const lokiEnabled = process.env.LOKI_ENABLED === 'true';
 
+let streams: pino.StreamEntry[] = [];
+
 const lokiStream = pinoLoki({
   host: process.env.LOKI_HOST || 'http://localhost:3100',
   labels: { app: 'your-app' },
@@ -21,6 +23,32 @@ const lokiStream = pinoLoki({
 });
 
 let loggerInstance: pino.Logger;
+
+
+if (isTerminal && isDev) {
+  const pretty = require('pino-pretty')({
+    colorize: true,
+    levelFirst: true,
+    singleLine: false,
+    translateTime: 'SYS:standard',
+    ignore: 'pid,hostname',
+  });
+  streams.push({ stream: pretty, level: 'debug' });
+} else {
+  streams.push({ stream: pino.destination(2), level: 'info' });
+}
+
+
+if (lokiEnabled) {
+  streams.push({ stream: lokiStream, level: 'info' });
+}
+
+loggerInstance = pino(
+  { level: isDev ? 'debug' : 'info', base: { model: MODEL_NAME, runtime: 'bun' } },
+  pino.multistream(streams)
+);
+
+/*
 
 if (isTerminal && process.env.NODE_ENV !== 'production') {
   const pretty = require('pino-pretty')({
@@ -63,3 +91,5 @@ export function handleRequest(ctx: { requestId: string; userId?: string }) {
     logger.info({ component: 'http', route: '/chat' }, 'Request received');
   });
 }
+
+ */
