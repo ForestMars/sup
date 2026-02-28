@@ -1,1 +1,8 @@
-{"name": "@sup/infra",  "version": "0.0.1", "type": "module" }
+{
+  "name": "@sup/infra",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "pino-loki": "^3.0.0"
+  }
+}
