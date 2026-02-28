@@ -4,23 +4,25 @@
  * Configured to use direct streams in Bun (Dev) and optimized JSON transport in Prod.
  */
 import pino from 'pino';
+import { pinoLoki } from 'pino-loki';
 import { AsyncLocalStorage } from 'node:async_hooks';
-
-/**
- * @file logger.ts
- * @description Bun-native O11y 2.0 Logger.
- */
 
 export const pinoStorage = new AsyncLocalStorage<Record<string, any>>();
 
 const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:7b';
 const isTerminal = process.stdout.isTTY;
+const isDev = process.env.NODE_ENV !== 'production';
+const lokiEnabled = process.env.LOKI_ENABLED === 'true';
+
+const lokiStream = pinoLoki({
+  host: process.env.LOKI_HOST || 'http://localhost:3100',
+  labels: { app: 'your-app' },
+  batching: { interval: 5 },
+});
 
 let loggerInstance: pino.Logger;
 
 if (isTerminal && process.env.NODE_ENV !== 'production') {
-  // DEV/BUN: Main-thread stream for instant terminal feedback.
-  // Using require here ensures pino-pretty isn't a blocking ESM import.
   const pretty = require('pino-pretty')({
     colorize: true,
     levelFirst: true,
@@ -33,21 +35,19 @@ if (isTerminal && process.env.NODE_ENV !== 'production') {
     level: 'debug',
     base: { model: MODEL_NAME, runtime: 'bun' }
   }, pretty);
-} else {
-  // PRODUCTION/BUN: High-performance JSON output.
-  // In Bun, we omit transport here to keep it simple and blazing fast.
-  loggerInstance = pino({
-    level: 'info',
-    base: { model: MODEL_NAME, runtime: 'bun' }
-  });
 }
 
-// The Proxy ensures context-awareness across the Bun async runtime
+else {
+  loggerInstance = pino(
+    { level: 'info', base: { model: MODEL_NAME, runtime: 'bun' } },
+    pino.destination(2)
+  );
+}
+
 export const logger = new Proxy(loggerInstance, {
   get(target, prop, receiver) {
     const store = pinoStorage.getStore();
     const value = Reflect.get(target, prop, receiver);
-
     if (typeof value === 'function' && store && typeof prop === 'string' && ['debug', 'info', 'warn', 'error', 'fatal'].includes(prop)) {
       return value.bind(target.child(store));
     }

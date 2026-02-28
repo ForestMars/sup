@@ -11,8 +11,9 @@
   ],
   "main": "index.js",
   "scripts": {
+    "app": "NODE_ENV=production bun apps/cli/chat.ts",
     "chat": "bun apps/cli/chat.ts",
-    "chat:loki": "NODE_ENV=production bun run chat",
+    "chat:loki": "LOKI_ENABLED=true bun apps/cli/chat.ts",
     "agent:test": "bun tests/test-agent.ts",
     "test": "bun test ./tests/e2e/e2e.test.ts",
     "tests": "bun test ./tests/**/*.test.ts",
