@@ -1,0 +1,8 @@
+Active adapters: [0m[33m1[0m
+OutputAdapters: [
+  {
+    [0mflagName[2m:[0m [0m[32m[0m[32m"efficient-style"[0m[0m[0m[2m,[0m
+    [0mwrapper[2m:[0m [36m[AsyncGeneratorFunction: efficientStyleGenerator][0m[0m[2m,[0m
+  }
+]
+You: You: 

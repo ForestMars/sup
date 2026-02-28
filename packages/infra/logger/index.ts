@@ -8,7 +8,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 
 /**
  * @file logger.ts
- * @description Bun-native O11y 2.0 Logger. 
+ * @description Bun-native O11y 2.0 Logger.
  */
 
 export const pinoStorage = new AsyncLocalStorage<Record<string, any>>();
@@ -18,7 +18,7 @@ const isTerminal = process.stdout.isTTY;
 
 let loggerInstance: pino.Logger;
 
-if (isTerminal) {
+if (isTerminal && process.env.NODE_ENV !== 'production') {
   // DEV/BUN: Main-thread stream for instant terminal feedback.
   // Using require here ensures pino-pretty isn't a blocking ESM import.
   const pretty = require('pino-pretty')({
@@ -56,9 +56,9 @@ export const logger = new Proxy(loggerInstance, {
 });
 
 export function handleRequest(ctx: { requestId: string; userId?: string }) {
-  pinoStorage.run({ 
-    requestId: ctx.requestId, 
-    userId: ctx.userId ?? 'anonymous' 
+  pinoStorage.run({
+    requestId: ctx.requestId,
+    userId: ctx.userId ?? 'anonymous'
   }, () => {
     logger.info({ component: 'http', route: '/chat' }, 'Request received');
   });
