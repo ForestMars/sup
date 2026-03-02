@@ -48,30 +48,6 @@ loggerInstance = pino(
   pino.multistream(streams)
 );
 
-/*
-
-if (isTerminal && process.env.NODE_ENV !== 'production') {
-  const pretty = require('pino-pretty')({
-    colorize: true,
-    levelFirst: true,
-    singleLine: false,
-    translateTime: 'SYS:standard',
-    ignore: 'pid,hostname',
-  });
-
-  loggerInstance = pino({
-    level: 'debug',
-    base: { model: MODEL_NAME, runtime: 'bun' }
-  }, pretty);
-}
-
-else {
-  loggerInstance = pino(
-    { level: 'info', base: { model: MODEL_NAME, runtime: 'bun' } },
-    pino.destination(2)
-  );
-}
-
 export const logger = new Proxy(loggerInstance, {
   get(target, prop, receiver) {
     const store = pinoStorage.getStore();
@@ -91,5 +67,3 @@ export function handleRequest(ctx: { requestId: string; userId?: string }) {
     logger.info({ component: 'http', route: '/chat' }, 'Request received');
   });
 }
-
- */
