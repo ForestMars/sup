@@ -1,12 +1,11 @@
-
 {
   "compilerOptions": {
     "strict": true,
-    "composite": true,            // Keep composite for project references
-    "noEmit": false,              // (Must be false for composite to function)
-    "declaration": true,          // Generates the .d.ts files for isolation
-    "declarationMap": true,       // Allows "Go to Definition" to work across layers
-    "emitDeclarationOnly": true,  // Prevents .js files from being created
+    "composite": true, // Keep composite for project references
+    "noEmit": false, // (Must be false for composite to function)
+    "declaration": true, // Generates the .d.ts files for isolation
+    "declarationMap": true, // Allows "Go to Definition" to work across layers
+    "emitDeclarationOnly": true, // Prevents .js files from being created
     "lib": ["ESNext", "dom"],
     "module": "esnext",
     "target": "esnext",
@@ -20,21 +19,19 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["bun-types"],
-    "files": [],
-     "paths": {                     // This should be removed for production grade code. 
-        "@*": ["./*"]
+    "paths": {
+      // This should be removed for production grade code.
+      "@*": ["./*"],
     },
-    "baseUrl": "packages"           // This one also is a bit of a hack that's not ideal for production. 
-
+    "baseUrl": "packages", // This one also is a bit of a hack that's not ideal for production.
   },
-    "references": [
-      { "path": "./packages/agents" },
-      { "path": "./packages/domain" },
-      { "path": "./packages/infra" },
-      { "path": "./packages/lib" },
-      { "path": "./packages/tools" }
-    ],
+  "references": [
+    { "path": "./packages/agents" },
+    { "path": "./packages/domain" },
+    { "path": "./packages/infra" },
+    { "path": "./packages/lib" },
+    { "path": "./packages/tools" },
+  ],
   "include": ["apps/**/*", "packages/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
-
