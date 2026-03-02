@@ -13,7 +13,7 @@
   "scripts": {
     "agent:test": "bun tests/test-agent.ts",
     "app": "NODE_ENV=production bun apps/cli/chat.ts",
-    "build": "bun x tsc --noEmit && vite build",
+    "build": "bun run type-check && vite build",
     "build:ci": "bun run build && bun run test:ci",
     "build:dev": "vite build --mode development",
     "chat": "bun apps/cli/chat.ts",
@@ -29,7 +29,8 @@
     "tests": "bun test ./tests/**/*.test.ts",
     "tests:int": "bun test ./tests/integration/*.test.ts",
     "tests:unit": "bun test ./tests/unit/*.test.ts",
-    "type-check": "bun x tsc --noEmit",
+    "type-check": "tsc --build",
+    "clean": "rm -rf dist && tsc --build --clean",
     "rebuild": "bun run clean:dist && bun run clean:tsbuildinfo && bun tsc --build --force"
   },
   "keywords": [],
