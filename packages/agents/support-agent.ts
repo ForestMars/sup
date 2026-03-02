@@ -18,8 +18,8 @@ import { OutputPort } from '@domain';
 
 
 const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
-const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps. 
-const TEMPERATURE = 0; 
+const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
+const TEMPERATURE = 0;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const instructions = readFileSync(join(__dirname, '..', '..', 'config', 'agent-instructions.txt'), 'utf-8');
@@ -65,11 +65,11 @@ function buildConversationHistory(events: AgentEvent[]): string {
 export async function* supportAgent(
   userInput: string,
   session: AgentSession,
-  opts?: {  
-    // output: OutputPort; 
-    client?: LanguageModel; // AI SDK type, can be a mock for testing.  
-    resolver?: ExpertiseResolverPort; 
-    tools?: Record<string, ToolAdapterPort> 
+  opts?: {
+    // output: OutputPort;
+    client?: LanguageModel; // AI SDK type, can be a mock for testing.
+    resolver?: ExpertiseResolverPort;
+    tools?: Record<string, ToolAdapterPort>
     }
 ): AsyncGenerator<AgentStep, void, unknown> {
 
@@ -82,10 +82,10 @@ export async function* supportAgent(
    * NOTE: We push to the event log BEFORE calling rebuildGraph so that
    * the current user message is visible to the router and world model.
    */
-  const userEvent: AgentEvent = { 
-    type: 'USER_UPDATE', 
-    payload: { text: userInput }, 
-    timestamp: Date.now() 
+  const userEvent: AgentEvent = {
+    type: 'USER_UPDATE',
+    payload: { text: userInput },
+    timestamp: Date.now()
   };
   session.events.push(userEvent);
 
@@ -100,10 +100,10 @@ export async function* supportAgent(
 
   logger.info(`[ROUTER] Engaging ${protocol.name} protocol.`);
 
-  yield { 
-    type: 'thinking', 
-    timestamp: Date.now(), 
-    message: 'Consulting internal knowledge graph...' 
+  yield {
+    type: 'thinking',
+    timestamp: Date.now(),
+    message: 'Consulting internal knowledge graph...'
   };
 
   logger.debug(`[DEBUG] Protocol System Prompt Length: ${protocol.systemPrompt?.length}`);
@@ -116,7 +116,7 @@ export async function* supportAgent(
    * Prompt ordering matters for small models — place behavioral instructions
    * before the data they govern, and gate the graph with an explicit instruction
    * so the model treats it as authoritative memory, not just metadata.
-   * If you're metaphorically inclined, it maps to past present future. 
+   * If you're metaphorically inclined, it maps to past present future.
    */
     const systemPrompt = [
     instructions,           // Constitution — who you are, non-negotiables
@@ -155,7 +155,7 @@ export async function* supportAgent(
   const response = await generateText({
     model,
     system: systemPrompt,
-    tools: protocol.tools, 
+    tools: protocol.tools,
     prompt: fullPrompt,
     temperature: supportAgentConfig.temperature
   });
@@ -171,7 +171,7 @@ export async function* supportAgent(
 
    logger.info({
     // cacheHit: false,
-    inputTokens,          
+    inputTokens,
     outputTokens,
     latencyMs: inferenceLatencyMs,  // Acktual wall time
     model: supportAgentConfig.model,
@@ -201,7 +201,7 @@ export async function* supportAgent(
           entityId: String(rawId)
         };
       }
-    } 
+    }
   }
 
   // Priority 2: JSON embedded in text output
@@ -236,7 +236,7 @@ export async function* supportAgent(
       type: 'TOOL_RESULT',
       payload: { toolId, entityId, result },
       timestamp: Date.now()
-    }); 
+    });
 
     yield { type: 'tool_result', timestamp: Date.now(), toolId, result };
 
@@ -258,8 +258,8 @@ export async function* supportAgent(
       temperature: supportAgentConfig.temperature
     });
 
-    logger.debug('[DEBUG] ToolCalls found:', response.toolCalls);
-    logger.debug('[DEBUG] Raw Text found:', response.text);
+    logger.debug(`[DEBUG] ToolCalls found: ${JSON.stringify(response.toolCalls)}`);
+    logger.debug(`[DEBUG] Raw Text found: ${JSON.stringify(response.text)}`);
 
     yield { type: 'final', timestamp: Date.now(), text: finalResponse.text };
   } else {
