@@ -1,14 +1,19 @@
 {
-  "extends": "@sup/tsconfig/base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./dist"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "**/*.ts",
+    "../../apps/cli/chat.ts" // Only include if agents "owns" the CLI entry
+  ],
+  "exclude": ["node_modules", "dist", "**/tests/*"],
   "references": [
+    { "path": "../domain" },
+    { "path": "../infra" },
     { "path": "../tools" },
-    { "path": "../lib" },
-    { "path": "../domain" }
+    { "path": "../lib" }
   ]
 }
