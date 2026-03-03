@@ -1,8 +1,15 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": { "composite": true, "rootDir": "." },
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "."
+  },
   "references": [
-    { "path": "../domain" }
+    {
+      "path": "../domain"
+    }
   ],
-  "include": ["**/*"]
+  "include": [
+    "**/*"
+  ]
 }
