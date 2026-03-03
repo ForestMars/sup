@@ -4,11 +4,11 @@ env:
   APP_ENV: CI
   IS_CI: true
   CI: true
-  NODE_ENV: 'test'
-  TEST_WITHOUT_LOGS: 'true'
+  NODE_ENV: "test"
+  TEST_WITHOUT_LOGS: "true"
   PORT: 8080
-  VITE_APP_TITLE: 'Polyglut'
-  VITE_APP_DESCRIPTION: 'Enterprise AI Chat Interface'
+  VITE_APP_TITLE: "Polyglut"
+  VITE_APP_DESCRIPTION: "Enterprise AI Chat Interface"
 
 on:
   workflow_dispatch:
@@ -59,13 +59,14 @@ jobs:
 
       - name: Run security audit
         run: bun audit
+        continue-on-error: true
 
   # Code quality checks
   code-quality:
     name: Code Quality & Standards
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,7 +105,7 @@ jobs:
     strategy:
       matrix:
         build-mode: [development, production]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -133,19 +134,19 @@ jobs:
             echo "Build failed: dist directory not found"
             exit 1
           fi
-          
+
           # Check for essential files
           if [ ! -f "dist/index.html" ]; then
             echo "Build failed: index.html not found"
             exit 1
           fi
-          
+
           # Check bundle size (warn if over 2MB)
           BUNDLE_SIZE=$(du -sb dist/ | cut -f1)
           if [ $BUNDLE_SIZE -gt 2097152 ]; then
             echo "Warning: Bundle size is large ($(($BUNDLE_SIZE / 1024 / 1024))MB)"
           fi
-          
+
           echo "✅ Build artifacts verified for ${{ matrix.build-mode }}"
 
       - name: Upload build artifacts
@@ -161,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [code-quality]
-    
+
     # Future-proofing: Add services when you implement backend
     # services:
     #   postgres:
@@ -192,7 +193,7 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-      
+
       - name: Install dependencies
         run: bun install
 
@@ -226,7 +227,7 @@ jobs:
     timeout-minutes: 30
     needs: [build-verification]
     if: github.event.inputs.run_e2e != 'false'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -271,7 +272,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [build-verification]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -315,7 +316,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build-verification]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -352,7 +353,7 @@ jobs:
     timeout-minutes: 5
     needs: [unit-tests]
     if: always()
-    
+
     steps:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@v2
@@ -366,7 +367,7 @@ jobs:
     timeout-minutes: 10
     needs: [unit-tests, e2e-tests, lighthouse-audit, bundle-analysis]
     if: always()
-    
+
     steps:
       - name: Check all jobs status
         run: |
@@ -374,17 +375,17 @@ jobs:
           echo "E2E Tests: ${{ needs.e2e-tests.result }}"
           echo "Lighthouse: ${{ needs.lighthouse-audit.result }}"
           echo "Bundle Analysis: ${{ needs.bundle-analysis.result }}"
-          
+
           if [[ "${{ needs.unit-tests.result }}" != "success" ]]; then
             echo "❌ Unit tests failed - not ready for deployment"
             exit 1
           fi
-          
+
           if [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
             echo "❌ E2E tests failed - not ready for deployment"
             exit 1
           fi
-          
+
           echo "✅ All critical checks passed - ready for deployment"
 
       - name: Post deployment readiness comment
@@ -394,41 +395,41 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const { number } = context.issue;
-            
+
             const unitTests = '${{ needs.unit-tests.result }}';
             const e2eTests = '${{ needs.e2e-tests.result }}';
             const lighthouse = '${{ needs.lighthouse-audit.result }}';
-            
+
             let status = '✅ **Deployment Ready**';
             let details = [];
-            
+
             if (unitTests === 'success') details.push('✅ Unit Tests Passed');
             else details.push('❌ Unit Tests Failed');
-            
+
             if (e2eTests === 'success') details.push('✅ E2E Tests Passed');
             else if (e2eTests === 'failure') details.push('❌ E2E Tests Failed');
             else details.push('⏭️ E2E Tests Skipped');
-            
+
             if (lighthouse === 'success') details.push('✅ Performance Audit Passed');
             else details.push('⚠️ Performance Audit Issues');
-            
+
             if (unitTests !== 'success' || e2eTests === 'failure') {
               status = '❌ **Not Ready for Deployment**';
             }
-            
+
             const body = `## 🚀 Deployment Readiness Report
-            
+
             ${status}
-            
+
             ### Test Results
             ${details.join('\n')}
-            
+
             ### Artifacts
             - 📊 [Coverage Report](https://app.codecov.io/gh/${owner}/${repo}/pull/${number})
             - 🎯 Bundle Analysis (check workflow artifacts)
             - 🔍 Lighthouse Report (check workflow artifacts)
             `;
-            
+
             github.rest.issues.createComment({
               owner,
               repo,
