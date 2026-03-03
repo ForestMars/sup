@@ -8,6 +8,4 @@
   "references": [],
   "include": ["**/*"],
   "exclude": ["node_modules", "dist"]
-  }
-
 }
