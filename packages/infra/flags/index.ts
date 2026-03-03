@@ -7,7 +7,7 @@
 
 import { OpenFeature } from "@openfeature/server-sdk";
 import { FlagdProvider } from "@openfeature/flagd-provider";
-import { PosthogProvider } from "@tapico/node-openfeature-posthog";
+import { PostHogProvider } from "@tapico/node-openfeature-posthog";
 
 const isDev = Bun.env.NODE_ENV === "development" || !Bun.env.NODE_ENV;
 
