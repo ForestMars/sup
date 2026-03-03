@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
+    "@openfeature/server-sdk": "^1.20.2",
     "pino-loki": "^3.0.0"
   }
 }
