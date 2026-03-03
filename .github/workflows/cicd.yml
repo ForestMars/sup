@@ -376,10 +376,19 @@ jobs:
           echo "Lighthouse: ${{ needs.lighthouse-audit.result }}"
           echo "Bundle Analysis: ${{ needs.bundle-analysis.result }}"
 
-          if [[ "${{ needs.unit-tests.result }}" != "success" ]]; then
-            echo "❌ Unit tests failed - not ready for deployment"
-            exit 1
-          fi
+          case "${{ needs.unit-tests.result }}" in
+            success)
+              echo "✅ Unit tests passed"
+              ;;
+            skipped)
+              echo "❌ Unit tests were SKIPPED. Deployment blocked for safety."
+              exit 1
+              ;;
+            *)
+              echo "❌ Unit tests failed with status: ${{ needs.unit-tests.result }}"
+              exit 1
+              ;;
+          esac
 
           if [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
             echo "❌ E2E tests failed - not ready for deployment"
