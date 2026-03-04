@@ -1,11 +1,11 @@
 /**
  * @file /src/agents/adapters/efficient-style.adapter.ts
- * @description Output Decorator for the Support Agent. Intercepts the AsyncGenerator 
- * stream to inject style-specific formatting (e.g., "Efficient" mode) into the 
+ * @description Output Decorator for the Support Agent. Intercepts the AsyncGenerator
+ * stream to inject style-specific formatting (e.g., "Efficient" mode) into the
  * final inference step.
  * * @module @agents/adapters
  */
-import type { AgentStep } from '@types/agent-types';
+import type { AgentStep } from '@sup/types/types';
 
 /**
  * EFFICIENT ADAPTER: Wraps the core generator to inject the style.
