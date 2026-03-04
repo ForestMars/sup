@@ -4,39 +4,51 @@
  * Determines which operational protocol (skill + toolset) to engage based on the current graph context and active domain.
  * This is the 🧠 of the agent's capability discovery mechanism, enabling it to adapt its behavior dynamically.
  */
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { entityLookupTool, resolutionTools } from '@/tools/order-tools';
-import { style } from '@/agents/style/';
-import { logger } from '../infra/logger';
-import { Protocol } from '@/domain/expertise.types';
-import type { ExpertStrategy, ExpertiseResolverPort } from '@/domain/expertise.types';
+import { readFileSync } from "fs";
+import { join } from "path";
+import {
+  entityLookupTool,
+  resolutionTools,
+} from "@sup/tools/order-tools";
+import { style } from "@sup/agents/style/";
+import { logger } from "@sup/infra/logger";
+import { Protocol } from "@sup/domain/expertise-types";
+import type {
+  ExpertStrategy,
+  ExpertiseResolverPort,
+} from "@sup/domain/expertise-types";
 
 // 1. PATH CONFIGURATION
 // Ensure this matches your actual project structure (e.g., /src/agents/skills)
-const SKILLS_DIR = join(process.cwd(), 'src', 'agents', 'skills');
+const SKILLS_DIR = join(
+  process.cwd(),
+  "src",
+  "agents",
+  "skills",
+);
 
 // 2. THE REGISTRY STRUCT
 export const Registry: Record<string, Protocol> = {
   resolution: {
-    key: 'resolution',
-    name: 'Conflict Resolution',
-    skillPath: 'entity-resolution.md',
+    key: "resolution",
+    name: "Conflict Resolution",
+    skillPath: "entity-resolution.md",
     tools: [entityLookupTool, ...resolutionTools],
-    styleOverride: "URGENT: Prioritize resolving data conflicts before answering general questions."
+    styleOverride:
+      "URGENT: Prioritize resolving data conflicts before answering general questions.",
   },
   billing: {
-    key: 'billing',
-    name: 'Billing Domain',
-    skillPath: 'billing.md',
+    key: "billing",
+    name: "Billing Domain",
+    skillPath: "billing.md",
     tools: [entityLookupTool],
   },
   default: {
-    key: 'default',
-    name: 'General Support',
-    skillPath: '', 
-    tools: [entityLookupTool]
-  }
+    key: "default",
+    name: "General Support",
+    skillPath: "",
+    tools: [entityLookupTool],
+  },
 };
 
 /**
@@ -49,18 +61,26 @@ export const ProtocolResolver: ExpertiseResolverPort = {
     // Logic Plane: Determine which protocol to engage
     let selection = Registry.default;
 
-    if (graphContext.includes('UNRESOLVED_CONFLICT')) {
+    if (graphContext.includes("UNRESOLVED_CONFLICT")) {
       selection = Registry.resolution;
     }
 
     // Implementation Plane: Load the actual markdown content lazily
     let skillContent = "";
-    if (selection.skillPath && selection.skillPath.trim() !== "") {
+    if (
+      selection.skillPath &&
+      selection.skillPath.trim() !== ""
+    ) {
       try {
-        const fullPath = join(SKILLS_DIR, selection.skillPath);
-        skillContent = readFileSync(fullPath, 'utf-8');
+        const fullPath = join(
+          SKILLS_DIR,
+          selection.skillPath,
+        );
+        skillContent = readFileSync(fullPath, "utf-8");
       } catch (error) {
-        logger.error(`[PROTOCOL_ERROR] Failed to load skill at ${selection.skillPath}:`, error);
+        logger.error(
+          `[PROTOCOL_ERROR] Failed to load skill at ${selection.skillPath}`,
+        );
       }
     }
 
@@ -68,18 +88,20 @@ export const ProtocolResolver: ExpertiseResolverPort = {
       style,
       selection.styleOverride || "",
       skillContent ? "## OPERATIONAL PROTOCOL" : "",
-      skillContent
-    ].filter(Boolean).join('\n\n');
+      skillContent,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
 
     return {
-      key: selection.key || 'default',
+      key: selection.key || "default",
       skillPath: selection.skillPath,
       tools: selection.tools,
       rules: selection.styleOverride || "",
       systemPrompt,
-      name: selection.name
+      name: selection.name,
     };
-  }
+  },
 };
 
 // Backwards-compatible helper
