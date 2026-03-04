@@ -89,11 +89,11 @@ jobs:
         run: bun run lint
 
       - name: Check code formatting with Prettier
-        run: bunx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}"
+        run: bunx prettier --check "packages/**/*.{ts,tsx,js,jsx,json,css,md}"
 
       - name: Run complexity analysis
         run: |
-          bunx typescript-complexity-analyzer src/
+          bunx typescript-complexity-analyzer packages/
         continue-on-error: true
 
   # Build verification across environments
@@ -130,16 +130,14 @@ jobs:
 
       - name: Verify build artifacts
         run: |
-          if [ ! -d "dist" ]; then
-            echo "Build failed: dist directory not found"
-            exit 1
-          fi
-
-          # Check for essential files
-          if [ ! -f "dist/index.html" ]; then
-            echo "Build failed: index.html not found"
-            exit 1
-          fi
+          for pkg in packages/domain packages/infra packages/tools packages/lib packages/agents;
+          do
+            if [ ! -d "$pkg/dist" ]; then
+              echo "Build failed: $pkg/dist not found"
+              exit 1
+            fi
+          done
+          echo "✅ All package dist directories verified"
 
           # Check bundle size (warn if over 2MB)
           BUNDLE_SIZE=$(du -sb dist/ | cut -f1)
@@ -198,10 +196,10 @@ jobs:
         run: bun install
 
       - name: Run unit tests
-        run: bun run test:run --coverage --reporter=verbose
+        run: bun run test:once --coverage --reporter=verbose
 
       - name: Run component tests
-        run: bun run test:run --coverage
+        run: bun run test:once --coverage
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -365,7 +363,13 @@ jobs:
     name: Deployment Readiness
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [unit-tests, e2e-tests, lighthouse-audit, bundle-analysis]
+    needs:
+      [
+        unit-tests,
+        e2e-tests,
+        lighthouse-audit,
+        bundle-analysis,
+      ]
     if: always()
 
     steps:
