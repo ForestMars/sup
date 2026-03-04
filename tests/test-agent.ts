@@ -1,6 +1,6 @@
-import { supportAgent } from '../src/agents/support-agent';
-import { logger } from '../src/logger';
-import { entityLookupTool } from '../src/tools/order-tools';
+import { supportAgent } from '@sup/agents/support-agent';
+import { logger } from '@sup/infra/logger';
+import { entityLookupTool } from '@sup/tools/order-tools';
 
 // Focused smoke test: confirm requesting invoice #12345 returns a natural-language
 // response (not a raw tool-call JSON) and contains expected information from the

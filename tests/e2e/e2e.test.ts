@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
-import { supportAgent } from '@agents/support-agent';
-import { entityLookupTool } from '@tools/order-tools';
+import { supportAgent } from '@sup/agents/support-agent';
+import { entityLookupTool } from '@sup/tools/order-tools';
 
 const TEST_TIMEOUT = 90000; 
 
