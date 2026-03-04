@@ -35,7 +35,7 @@
     "type-check": "tsc --build",
     "clean": "rm -rf dist && tsc --build --clean",
     "clean:fr": "find . -name 'dist' -type d -prune -exec rm -rf {} + && find . -name '*.tsbuildinfo' -delete && tsc --build --clean",
-    "clean:nuke": "find . -type f \\( -name '*.js' -o -name '*.d.ts' -o -name '*.js.map' -o -name '*.tsbuildinfo' \\) -not -path '*/node_modules/*' -delete && find . -name 'dist' -type d -prune -exec rm -rf {} +",
+    "clean:nuke": "find . -type f \\( -name '*.js' -o -name '*.d.ts' -o -name '*.d.ts.map' -o -name '*.js.map' -o -name '*.tsbuildinfo' \\) -not -path '*/node_modules/*' -delete && find . -name 'dist' -type d -prune -exec rm -rf {} +",
     "reinstall": "bun pm cache rm && rm -rf node_modules && bun install",
     "rebuild": "bun run clean:dist && bun run clean:tsbuildinfo && bun tsc --build --force"
   },
