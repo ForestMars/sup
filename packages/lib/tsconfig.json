@@ -1,15 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "outDir": "./dist",
   },
   "references": [
-    {
-      "path": "../domain"
-    }
+    { "path": "../domain" },
+    { "path": "../infra" },
+    { "path": "../tools" },
   ],
-  "include": [
-    "**/*"
-  ]
+  "include": ["**/*"],
 }
