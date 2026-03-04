@@ -369,79 +369,72 @@ jobs:
     if: always()
 
     steps:
-      - name: Check all jobs status
-        run: |
-          echo "Unit Tests: ${{ needs.unit-tests.result }}"
-          echo "E2E Tests: ${{ needs.e2e-tests.result }}"
-          echo "Lighthouse: ${{ needs.lighthouse-audit.result }}"
-          echo "Bundle Analysis: ${{ needs.bundle-analysis.result }}"
-
-          case "${{ needs.unit-tests.result }}" in
-            success)
-              echo "✅ Unit tests passed"
-              ;;
-            skipped)
-              echo "❌ Unit tests were SKIPPED. Deployment blocked for safety."
+      steps:
+        - name: Validate Unit Tests
+          run: |
+            echo "Status: ${{ needs.unit-tests.result }}"
+            if [[ "${{ needs.unit-tests.result }}" != "success" ]]; then
+              echo "❌ Unit tests must pass for deployment. Current: ${{ needs.unit-tests.result }}"
               exit 1
-              ;;
-            *)
-              echo "❌ Unit tests failed with status: ${{ needs.unit-tests.result }}"
+            fi
+
+        - name: Validate E2E Tests
+          run: |
+            echo "Status: ${{ needs.e2e-tests.result }}"
+            # We allow 'skipped' for E2E because of your manual toggle, but NOT 'failure'
+            if [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
+              echo "❌ E2E tests failed."
               exit 1
-              ;;
-          esac
+            fi
 
-          if [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
-            echo "❌ E2E tests failed - not ready for deployment"
-            exit 1
-          fi
+        - name: Final Approval
+          run: echo "🚀 All critical gates passed. Ready to deploy."
 
-          echo "✅ All critical checks passed - ready for deployment"
+        - name: Post deployment readiness comment
+          if: github.event_name == 'pull_request'
+          uses: actions/github-script@v7
+          with:
+            script: |
+              const { owner, repo } = context.repo;
+              const { number } = context.issue;
 
-      - name: Post deployment readiness comment
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const { number } = context.issue;
+              const unitTests = '${{ needs.unit-tests.result }}';
+              const e2eTests = '${{ needs.e2e-tests.result }}';
+              const lighthouse = '${{ needs.lighthouse-audit.result }}';
 
-            const unitTests = '${{ needs.unit-tests.result }}';
-            const e2eTests = '${{ needs.e2e-tests.result }}';
-            const lighthouse = '${{ needs.lighthouse-audit.result }}';
+              let status = '✅ **Deployment Ready**';
+              let details = [];
 
-            let status = '✅ **Deployment Ready**';
-            let details = [];
+              if (unitTests === 'success') details.push('✅ Unit Tests Passed');
+              else details.push('❌ Unit Tests Failed');
 
-            if (unitTests === 'success') details.push('✅ Unit Tests Passed');
-            else details.push('❌ Unit Tests Failed');
+              if (e2eTests === 'success') details.push('✅ E2E Tests Passed');
+              else if (e2eTests === 'failure') details.push('❌ E2E Tests Failed');
+              else details.push('⏭️ E2E Tests Skipped');
 
-            if (e2eTests === 'success') details.push('✅ E2E Tests Passed');
-            else if (e2eTests === 'failure') details.push('❌ E2E Tests Failed');
-            else details.push('⏭️ E2E Tests Skipped');
+              if (lighthouse === 'success') details.push('✅ Performance Audit Passed');
+              else details.push('⚠️ Performance Audit Issues');
 
-            if (lighthouse === 'success') details.push('✅ Performance Audit Passed');
-            else details.push('⚠️ Performance Audit Issues');
+              if (unitTests !== 'success' || e2eTests === 'failure') {
+                status = '❌ **Not Ready for Deployment**';
+              }
 
-            if (unitTests !== 'success' || e2eTests === 'failure') {
-              status = '❌ **Not Ready for Deployment**';
-            }
+              const body = `## 🚀 Deployment Readiness Report
 
-            const body = `## 🚀 Deployment Readiness Report
+              ${status}
 
-            ${status}
+              ### Test Results
+              ${details.join('\n')}
 
-            ### Test Results
-            ${details.join('\n')}
+              ### Artifacts
+              - 📊 [Coverage Report](https://app.codecov.io/gh/${owner}/${repo}/pull/${number})
+              - 🎯 Bundle Analysis (check workflow artifacts)
+              - 🔍 Lighthouse Report (check workflow artifacts)
+              `;
 
-            ### Artifacts
-            - 📊 [Coverage Report](https://app.codecov.io/gh/${owner}/${repo}/pull/${number})
-            - 🎯 Bundle Analysis (check workflow artifacts)
-            - 🔍 Lighthouse Report (check workflow artifacts)
-            `;
-
-            github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: number,
-              body
-            });
+              github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body
+              });
