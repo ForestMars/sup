@@ -1,5 +1,5 @@
 /**
- * @file /src/agents/support-agent.ts
+ * @file /packages/agents/support-agent.ts
  * @description Event-Sourced Graph-Based Support Agent.
  */
 import { generateText } from 'ai';
@@ -10,16 +10,17 @@ import { dirname, join } from 'node:path';
 import { z } from 'zod';
 
 //import type { AgentStep, AgentConfig, AgentSession, AgentEvent } from '@types/agent-types';
-import type { ExpertiseResolverPort, ToolAdapterPort } from '@domain/expertise.types';
-import { rebuildGraph } from '@lib/graph-reducer';
-import { logger } from '@infra/logger';
-import { CONTEXT_ANCHOR } from '@agents/config';
-import { OutputPort } from '@domain';
-
+import type { AgentConfig, AgentSession, AgentEvent, AgentStep } from '@sup/types/types';
+import type { ExpertiseResolverPort, ToolAdapterPort } from '@sup/domain/expertise-types';
+import { rebuildGraph } from '@sup/lib/graph-reducer';
+import { logger } from '@sup/infra/logger';
+import { CONTEXT_ANCHOR } from '@sup/agents/config';
+import { OutputPort } from '@sup/domain';
 
 const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
 const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
 const TEMPERATURE = 0;
+const LanguageModel = DEFAULT_MODEL
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const instructions = readFileSync(join(__dirname, '..', '..', 'config', 'agent-instructions.txt'), 'utf-8');
@@ -28,7 +29,7 @@ const supportAgentConfig: AgentConfig = {
   name: 'SupportBot',
   model: process.env.SUPPORT_AGENT_MODEL || DEFAULT_MODEL,
   instructions,
-  temperature: TEMPERATURE,
+  // temperature: TEMPERATURE,
   tools: []
 };
 
@@ -157,7 +158,7 @@ export async function* supportAgent(
     system: systemPrompt,
     tools: protocol.tools,
     prompt: fullPrompt,
-    temperature: supportAgentConfig.temperature
+    // temperature: supportAgentConfig.temperature
   });
 
   const inferenceLatencyMs = Math.round(performance.now() - startTime);
@@ -175,7 +176,7 @@ export async function* supportAgent(
     outputTokens,
     latencyMs: inferenceLatencyMs,  // Acktual wall time
     model: supportAgentConfig.model,
-    temperature: supportAgentConfig.temperature,
+    // temperature: supportAgentConfig.temperature,
     toolCalls: response.toolCalls?.length || 0
   }, 'inference_complete');
 
@@ -255,7 +256,7 @@ export async function* supportAgent(
         updatedGraphContext,
       ].filter(Boolean).join('\n\n'),
       prompt: `${historyWithResult}\n\nBased on the above, summarize the situation for the user.`,
-      temperature: supportAgentConfig.temperature
+      // temperature: supportAgentConfig.temperature
     });
 
     logger.debug(`[DEBUG] ToolCalls found: ${JSON.stringify(response.toolCalls)}`);
