@@ -1,0 +1,10 @@
+{
+  "name": "@sup/cli",
+  "dependencies": {
+    "@sup/domain": "workspace:*",
+    "@sup/infra": "workspace:*",
+    "@sup/tools": "workspace:*",
+    "@sup/lib": "workspace:*",
+    "@sup/agents": "workspace:*"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "target": "ESNext",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "types": ["bun-types"]
+  },
+  "files": [],
+  "references": [
+    { "path": "types" },
+    { "path": "packages/domain" },
+    { "path": "packages/infra" },
+    { "path": "packages/tools" },
+    { "path": "packages/lib" },
+    { "path": "packages/agents" }
+  ]
+}

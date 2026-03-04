@@ -1,13 +1,26 @@
 {
   "name": "@sup/domain",
-  "version": "0.2.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+  "typesVersions": {
+    "*": {
+      "ports": [
+        "./ports/index.ts"
+      ],
+      "types": [
+        "./types/index.ts"
+      ],
+      "expertise-types": [
+        "./expertise-types.ts"
+      ],
+      "output-port": [
+        "./output-port.ts"
+      ]
     }
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./ports": "./ports/index.ts",
+    "./types": "./types/index.ts",
+    "./expertise-types": "./expertise-types.ts",
+    "./output-port": "./output-port.ts"
   }
 }

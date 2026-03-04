@@ -9,11 +9,11 @@ export class StyledOutputAdapter implements OutputPort {
     private flags: { style?: string } // Configuration is INJECTED
   ) {}
 
-  async send(text: string): Promise<void> {
+  async dispatch(text: string): Promise<void> {
     // The "decider" lives inside the adapter, keeping chat.ts clean
     if (this.flags.style === 'efficient') {
-      return this.inner.send(`I'm very efficient!!! ${text}`);
+      return this.inner.dispatch(`I'm very efficient!!! ${text}`);
     }
-    return this.inner.send(text);
+    return this.inner.dispatch(text);
   }
 }

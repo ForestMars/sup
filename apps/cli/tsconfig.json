@@ -1,0 +1,16 @@
+{
+  "extends": "../../packages/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist",
+  },
+  "references": [
+    { "path": "../../packages/domain" },
+    { "path": "../../packages/infra" },
+    { "path": "../../packages/tools" },
+    { "path": "../../packages/lib" },
+    { "path": "../../packages/agents" },
+  ],
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"],
+}

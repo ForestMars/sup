@@ -1,37 +1,63 @@
 // packages/infra/adapters/JsonFileProvider.ts
-import { Provider, ResolutionDetails, JsonValue } from '@openfeature/server-sdk';
-import flagsConfig from '../../../config/flags.json';
+import {
+  EvaluationContext,
+  JsonValue,
+  Logger,
+  Provider,
+  ResolutionDetails,
+} from "@openfeature/server-sdk";
+import flagsConfig from "../../../config/flags.json";
 
 export class JsonFileProvider implements Provider {
   metadata = {
-    name: 'JsonFileProvider',
+    name: "JsonFileProvider",
   };
 
-  resolveBooleanEvaluation(flagKey: string, defaultValue: boolean): ResolutionDetails<boolean> {
-    const value = flagsConfig[flagKey]?.enabled ?? defaultValue;
-    return {
-      value,
-    };
+  async resolveBooleanEvaluation(
+    flagKey: string,
+    defaultValue: boolean,
+    context: EvaluationContext,
+    logger: Logger,
+  ): Promise<ResolutionDetails<boolean>> {
+    const value =
+      (flagsConfig[flagKey as keyof typeof flagsConfig] as any)?.enabled ??
+      defaultValue;
+    return { value };
   }
 
-  resolveStringEvaluation(flagKey: string, defaultValue: string): ResolutionDetails<string> {
-    const value = flagsConfig[flagKey]?.value ?? defaultValue;
-    return {
-      value,
-    };
+  async resolveStringEvaluation(
+    flagKey: string,
+    defaultValue: string,
+    context: EvaluationContext,
+    logger: Logger,
+  ): Promise<ResolutionDetails<string>> {
+    const value =
+      (flagsConfig[flagKey as keyof typeof flagsConfig] as any)?.value ??
+      defaultValue;
+    return { value };
   }
 
-  resolveNumberEvaluation(flagKey: string, defaultValue: number): ResolutionDetails<number> {
-    const value = flagsConfig[flagKey]?.value ?? defaultValue;
-    return {
-      value,
-    };
+  async resolveNumberEvaluation(
+    flagKey: string,
+    defaultValue: number,
+    context: EvaluationContext,
+    logger: Logger,
+  ): Promise<ResolutionDetails<number>> {
+    const value =
+      (flagsConfig[flagKey as keyof typeof flagsConfig] as any)?.value ??
+      defaultValue;
+    return { value };
   }
 
-  resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T): ResolutionDetails<T> {
-    const value = flagsConfig[flagKey]?.value ?? defaultValue;
-    return {
-      value,
-    };
+  async resolveObjectEvaluation<T extends JsonValue>(
+    flagKey: string,
+    defaultValue: T,
+    context: EvaluationContext,
+    logger: Logger,
+  ): Promise<ResolutionDetails<T>> {
+    const value =
+      (flagsConfig[flagKey as keyof typeof flagsConfig] as any)?.value ??
+      defaultValue;
+    return { value };
   }
 }

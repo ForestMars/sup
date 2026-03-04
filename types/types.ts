@@ -1,14 +1,14 @@
-// src/types/agent-types.ts
+// src/types/types.ts
 
 /**
  * Types of steps an agent can yield during execution
  */
-export type AgentStepType = 
-  | 'thinking'      // Agent is processing/calling LLM
-  | 'llm_response'  // LLM returned text
-  | 'tool_call'     // Agent is calling a tool
-  | 'tool_result'   // Tool execution completed
-  | 'final';        // Final answer ready
+export type AgentStepType =
+  | "thinking" // Agent is processing/calling LLM
+  | "llm_response" // LLM returned text
+  | "tool_call" // Agent is calling a tool
+  | "tool_result" // Tool execution completed
+  | "final"; // Final answer ready
 
 /**
  * Base step that all agent steps extend
@@ -22,7 +22,7 @@ interface BaseAgentStep {
  * Agent is thinking/processing
  */
 export interface ThinkingStep extends BaseAgentStep {
-  type: 'thinking';
+  type: "thinking";
   message: string;
 }
 
@@ -30,7 +30,7 @@ export interface ThinkingStep extends BaseAgentStep {
  * LLM returned a response
  */
 export interface LLMResponseStep extends BaseAgentStep {
-  type: 'llm_response';
+  type: "llm_response";
   text: string;
   raw: unknown; // Raw LLM response
 }
@@ -39,7 +39,7 @@ export interface LLMResponseStep extends BaseAgentStep {
  * Agent is calling a tool
  */
 export interface ToolCallStep extends BaseAgentStep {
-  type: 'tool_call';
+  type: "tool_call";
   toolId: string;
   toolName: string;
   parameters: Record<string, unknown>;
@@ -49,7 +49,7 @@ export interface ToolCallStep extends BaseAgentStep {
  * Tool execution result
  */
 export interface ToolResultStep extends BaseAgentStep {
-  type: 'tool_result';
+  type: "tool_result";
   toolId: string;
   result: unknown;
   error?: string;
@@ -59,14 +59,14 @@ export interface ToolResultStep extends BaseAgentStep {
  * Final synthesized answer
  */
 export interface FinalStep extends BaseAgentStep {
-  type: 'final';
+  type: "final";
   text: string;
 }
 
 /**
  * Union of all possible agent steps
  */
-export type AgentStep = 
+export type AgentStep =
   | ThinkingStep
   | LLMResponseStep
   | ToolCallStep
@@ -76,7 +76,10 @@ export type AgentStep =
 /**
  * Tool definition interface
  */
-export interface Tool<TParams = Record<string, unknown>, TResult = unknown> {
+export interface Tool<
+  TParams = Record<string, unknown>,
+  TResult = unknown,
+> {
   id: string;
   name: string;
   description: string;
@@ -96,16 +99,34 @@ export interface AgentConfig {
  * Events that can occur in an agent session
  * Used for tracking state changes over time
  */
-type AgentEvent = 
-  | { type: 'USER_UPDATE', payload: string, timestamp: number }
-  | { type: 'ORACLE_DELETE', payload: { id: string }, timestamp: number }
-  | { type: 'ADMIN_RESTORE', payload: { metadata: any }, timestamp: number };
+export type AgentEvent =
+  | {
+      type: "USER_UPDATE";
+      payload: {text: string};
+      timestamp: number;
+    }
+  | {
+      type: "ORACLE_DELETE";
+      payload: { id: string };
+      timestamp: number;
+    }
+  | {
+      type: "ADMIN_RESTORE";
+      payload: { metadata: any };
+      timestamp: number;
+    }
+  | {
+      type: "TOOL_RESULT";
+      payload: { toolId: string; entityId: string; result: any };
+      timestamp: number;
+    };
 
 /** Agent session state
  */
-export
-interface AgentSession {
+export interface AgentSession {
   sessionId: string;
+  userId: string;
+  id: string;
   events: AgentEvent[];
   // This is our "World Model" - the current state of the subnet
   worldModel: {

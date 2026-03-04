@@ -1,8 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "outDir": "./dist",
   },
-  "include": ["**/*"]
+  "references": [{ "path": "../../types" }],
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist"],
 }

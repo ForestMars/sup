@@ -1,5 +1,21 @@
-{ 
-  "name": "@sup/agents", 
-  "version": "0.0.1", 
-  "dependencies": { "@sup/domain": "workspace:*" }  // dependency inversion inversion
+{
+  "name": "@sup/agents",
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "./",
+    "outDir": "./dist",
+    "typeRoots": [
+      "../../node_modules/@types",
+      "../../node_modules"
+    ]
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/tests/*"],
+  "references": [
+    { "path": "../domain" },
+    { "path": "../infra" },
+    { "path": "../tools" },
+    { "path": "../lib" }
+  ]
 }

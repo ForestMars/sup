@@ -1,5 +1,5 @@
 /**
- * @file /src/agents/support-agent.ts
+ * @file /packages/agents/support-agent.ts
  * @description Event-Sourced Graph-Based Support Agent.
  */
 import { generateText } from 'ai';
@@ -10,16 +10,17 @@ import { dirname, join } from 'node:path';
 import { z } from 'zod';
 
 //import type { AgentStep, AgentConfig, AgentSession, AgentEvent } from '@types/agent-types';
-import type { ExpertiseResolverPort, ToolAdapterPort } from '@domain/expertise.types';
-import { rebuildGraph } from '@lib/graph-reducer';
-import { logger } from '@infra/logger';
-import { CONTEXT_ANCHOR } from '@agents/config';
-import { OutputPort } from '@domain';
-
+import type { AgentConfig, AgentSession, AgentEvent, AgentStep } from '@sup/types/types';
+import type { ExpertiseResolverPort, ToolAdapterPort } from '@sup/domain/expertise-types';
+import { rebuildGraph } from '@sup/lib/graph-reducer';
+import { logger } from '@sup/infra/logger';
+import { CONTEXT_ANCHOR } from '@sup/agents/config';
+import { OutputPort } from '@sup/domain';
 
 const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
-const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps. 
-const TEMPERATURE = 0; 
+const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
+const TEMPERATURE = 0;
+const LanguageModel = DEFAULT_MODEL
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const instructions = readFileSync(join(__dirname, '..', '..', 'config', 'agent-instructions.txt'), 'utf-8');
@@ -28,7 +29,7 @@ const supportAgentConfig: AgentConfig = {
   name: 'SupportBot',
   model: process.env.SUPPORT_AGENT_MODEL || DEFAULT_MODEL,
   instructions,
-  temperature: TEMPERATURE,
+  // temperature: TEMPERATURE,
   tools: []
 };
 
@@ -65,11 +66,11 @@ function buildConversationHistory(events: AgentEvent[]): string {
 export async function* supportAgent(
   userInput: string,
   session: AgentSession,
-  opts?: {  
-    // output: OutputPort; 
-    client?: LanguageModel; // AI SDK type, can be a mock for testing.  
-    resolver?: ExpertiseResolverPort; 
-    tools?: Record<string, ToolAdapterPort> 
+  opts?: {
+    // output: OutputPort;
+    client?: any // LanguageModel; AI SDK type, can be a mock for testing.
+    resolver?: ExpertiseResolverPort;
+    tools?: Record<string, ToolAdapterPort>
     }
 ): AsyncGenerator<AgentStep, void, unknown> {
 
@@ -82,10 +83,10 @@ export async function* supportAgent(
    * NOTE: We push to the event log BEFORE calling rebuildGraph so that
    * the current user message is visible to the router and world model.
    */
-  const userEvent: AgentEvent = { 
-    type: 'USER_UPDATE', 
-    payload: { text: userInput }, 
-    timestamp: Date.now() 
+  const userEvent: AgentEvent = {
+    type: 'USER_UPDATE',
+    payload: { text: userInput },
+    timestamp: Date.now()
   };
   session.events.push(userEvent);
 
@@ -100,10 +101,10 @@ export async function* supportAgent(
 
   logger.info(`[ROUTER] Engaging ${protocol.name} protocol.`);
 
-  yield { 
-    type: 'thinking', 
-    timestamp: Date.now(), 
-    message: 'Consulting internal knowledge graph...' 
+  yield {
+    type: 'thinking',
+    timestamp: Date.now(),
+    message: 'Consulting internal knowledge graph...'
   };
 
   logger.debug(`[DEBUG] Protocol System Prompt Length: ${protocol.systemPrompt?.length}`);
@@ -116,7 +117,7 @@ export async function* supportAgent(
    * Prompt ordering matters for small models — place behavioral instructions
    * before the data they govern, and gate the graph with an explicit instruction
    * so the model treats it as authoritative memory, not just metadata.
-   * If you're metaphorically inclined, it maps to past present future. 
+   * If you're metaphorically inclined, it maps to past present future.
    */
     const systemPrompt = [
     instructions,           // Constitution — who you are, non-negotiables
@@ -155,9 +156,9 @@ export async function* supportAgent(
   const response = await generateText({
     model,
     system: systemPrompt,
-    tools: protocol.tools, 
+    tools: protocol.tools as any, // 😬
     prompt: fullPrompt,
-    temperature: supportAgentConfig.temperature
+    // temperature: supportAgentConfig.temperature
   });
 
   const inferenceLatencyMs = Math.round(performance.now() - startTime);
@@ -166,16 +167,16 @@ export async function* supportAgent(
   const text = response.text.trim();
   logger.debug(`\n[DEBUG] LLM Raw Output (Text Content): """\n${text}\n"""\n`);
   if (response.toolCalls.length > 0) {
-    logger.debug(`\n[DEBUG] @@@@@@ Native Tool Calls Found:`, JSON.stringify(response.toolCalls, null, 2));
+    logger.debug(`\n[DEBUG] @@@@@@ Native Tool Calls Found: ${JSON.stringify(response.toolCalls, null, 2)}`);
   }
 
    logger.info({
     // cacheHit: false,
-    inputTokens,          
+    inputTokens,
     outputTokens,
     latencyMs: inferenceLatencyMs,  // Acktual wall time
     model: supportAgentConfig.model,
-    temperature: supportAgentConfig.temperature,
+    // temperature: supportAgentConfig.temperature,
     toolCalls: response.toolCalls?.length || 0
   }, 'inference_complete');
 
@@ -192,7 +193,7 @@ export async function* supportAgent(
     if (isLookup) {
       // Defensively find the arguments object.
       // Checks .args (standard AI SDK) OR .input (seen in some provider variants)
-      const args = (call.args || (call as any).input || {}) as any;
+      const args = ((call as any).args || (call as any).input || {}) as any; // 😬😬😬
       const rawId = args.entityId || args.order_id || args.order_number || args.id;
 
       if (rawId !== undefined) {
@@ -201,7 +202,7 @@ export async function* supportAgent(
           entityId: String(rawId)
         };
       }
-    } 
+    }
   }
 
   // Priority 2: JSON embedded in text output
@@ -221,7 +222,7 @@ export async function* supportAgent(
     const { entityId } = toolCall;
     const toolId = toolCall.tool;
 
-    yield { type: 'tool_call', timestamp: Date.now(), toolId, parameters: { entityId } };
+    yield { 'toolName': toolId, type: 'tool_call', timestamp: Date.now(), toolId, parameters: { entityId } };
 
     // Execute the tool via injected tool adapters
     const toolAdapter = opts?.tools?.[toolId];
@@ -236,7 +237,7 @@ export async function* supportAgent(
       type: 'TOOL_RESULT',
       payload: { toolId, entityId, result },
       timestamp: Date.now()
-    }); 
+    });
 
     yield { type: 'tool_result', timestamp: Date.now(), toolId, result };
 
@@ -255,11 +256,11 @@ export async function* supportAgent(
         updatedGraphContext,
       ].filter(Boolean).join('\n\n'),
       prompt: `${historyWithResult}\n\nBased on the above, summarize the situation for the user.`,
-      temperature: supportAgentConfig.temperature
+      // temperature: supportAgentConfig.temperature
     });
 
-    logger.debug('[DEBUG] ToolCalls found:', response.toolCalls);
-    logger.debug('[DEBUG] Raw Text found:', response.text);
+    logger.debug(`[DEBUG] ToolCalls found: ${JSON.stringify(response.toolCalls)}`);
+    logger.debug(`[DEBUG] Raw Text found: ${JSON.stringify(response.text)}`);
 
     yield { type: 'final', timestamp: Date.now(), text: finalResponse.text };
   } else {
