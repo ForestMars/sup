@@ -21,7 +21,7 @@ npm-debug.log
 
 # Typescript
 *,js
-
+.eslintcache
 
 # node_moduules, npm cache
 node_modules
