@@ -4,7 +4,7 @@
  * The style can be 'friendly', 'formal', 'raw', or 'none', and the formatting adapts accordingly.
  * This allows the agent to present tool results in a way that matches the desired tone and user experience.  
  */
-export const style_ = "..."
+export const style_ = '...';
 
 export type Style = 'friendly' | 'formal' | 'raw' | 'none';
 export type ToolMeta = {
@@ -23,10 +23,10 @@ export const style = `
 
 // NB. We currently don't use multiple styles, but the tests still pass. 
 export const styleMap: Record<Style, string> = {
-  friendly: "Be warm and use emojis.",
-  formal: "Be strictly professional.",
-  raw: "Output raw data only.",
-  none: ""
+  friendly: 'Be warm and use emojis.',
+  formal: 'Be strictly professional.',
+  raw: 'Output raw data only.',
+  none: ''
 };
 
 function humanizeToolId(id: string) {

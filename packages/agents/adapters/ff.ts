@@ -10,7 +10,7 @@
  import { formatToolResult } from '../style';
  // import { featureFlags } from '@sup/lib/feature-flags';
  import { client as featureFlags } from '@sup/infra/flags';
- import { ToolMeta } from '../style'
+ import { ToolMeta } from '../style';
 
 export async function* flaggedSupportAgent(
   userInput: string,

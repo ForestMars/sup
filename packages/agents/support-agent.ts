@@ -20,7 +20,7 @@ import { OutputPort } from '@sup/domain';
 const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
 const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
 const TEMPERATURE = 0;
-const LanguageModel = DEFAULT_MODEL
+const LanguageModel = DEFAULT_MODEL;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const instructions = readFileSync(join(__dirname, '..', '..', 'config', 'agent-instructions.txt'), 'utf-8');
@@ -74,7 +74,7 @@ export async function* supportAgent(
     }
 ): AsyncGenerator<AgentStep, void, unknown> {
 
-  if (!session) throw new Error("No session provided to Agent.");
+  if (!session) throw new Error('No session provided to Agent.');
   if (!session.events) session.events = [];
 
   const model = opts?.client || ollama(supportAgentConfig.model);
@@ -123,10 +123,10 @@ export async function* supportAgent(
     instructions,           // Constitution — who you are, non-negotiables
     protocol.systemPrompt,  // What to do RIGHT NOW — close to the data it governs
     CONTEXT_ANCHOR,         // How to interpret what follows
-    `### CURRENT KNOWLEDGE_GRAPH\n` +
-    `The following represents your memory of this conversation. ` +
-    `All entity IDs and states here are established facts — ` +
-    `do NOT ask the user to re-provide information already present here.\n`,
+    '### CURRENT KNOWLEDGE_GRAPH\n' +
+    'The following represents your memory of this conversation. ' +
+    'All entity IDs and states here are established facts — ' +
+    'do NOT ask the user to re-provide information already present here.\n',
     graphContext,           // The World Model — last thing read, most salient
   ].filter(Boolean).join('\n\n');
 
@@ -251,8 +251,8 @@ export async function* supportAgent(
       model,
       system: [
         protocol.systemPrompt,
-        `### CURRENT KNOWLEDGE_GRAPH\n` +
-        `Do NOT ask the user for information already present here.\n` +
+        '### CURRENT KNOWLEDGE_GRAPH\n' +
+        'Do NOT ask the user for information already present here.\n' +
         updatedGraphContext,
       ].filter(Boolean).join('\n\n'),
       prompt: `${historyWithResult}\n\nBased on the above, summarize the situation for the user.`,

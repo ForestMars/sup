@@ -5,12 +5,12 @@ import {
   Logger,
   Provider,
   ResolutionDetails,
-} from "@openfeature/server-sdk";
-import flagsConfig from "../../../config/flags.json";
+} from '@openfeature/server-sdk';
+import flagsConfig from '../../../config/flags.json';
 
 export class JsonFileProvider implements Provider {
   metadata = {
-    name: "JsonFileProvider",
+    name: 'JsonFileProvider',
   };
 
   async resolveBooleanEvaluation(

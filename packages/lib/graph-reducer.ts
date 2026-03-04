@@ -3,8 +3,8 @@
  * @description Event-Sourced Graph Reducer to Reconstruct MemoryGraph from Agent Events.
  */
 
-import { MemoryGraph } from "./memory-graph";
-import type { AgentEvent } from "@sup/types/types";
+import { MemoryGraph } from './memory-graph';
+import type { AgentEvent } from '@sup/types/types';
 
 export function rebuildGraph(
   history: AgentEvent[],
@@ -18,14 +18,14 @@ export function rebuildGraph(
 
   for (const event of events) {
     switch (event.type) {
-      case "USER_UPDATE":
+      case 'USER_UPDATE':
         const text = event.payload.text;
         const activeConflict = Array.from(
           graph.nodes.values(),
         ).find(
           (n) =>
             n.properties.resolutionState ===
-            "UNRESOLVED_CONFLICT",
+            'UNRESOLVED_CONFLICT',
         );
 
         if (activeConflict) {
@@ -35,7 +35,7 @@ export function rebuildGraph(
             {
               // Append the new input directly to the entity that is currently "broken"
               workingContext:
-                `${activeConflict.properties.workingContext || ""} | New Detail: ${text}`.trim(),
+                `${activeConflict.properties.workingContext || ''} | New Detail: ${text}`.trim(),
             },
           );
         }
@@ -43,10 +43,10 @@ export function rebuildGraph(
         // 1. Ensure a Root Issue exists
         let activeIssue = graph.findActiveIssue();
         if (!activeIssue) {
-          const issueId = "current_session_issue";
-          graph.setNode(issueId, "ISSUE", {
-            status: "OPEN",
-            resolution: "UNRESOLVED",
+          const issueId = 'current_session_issue';
+          graph.setNode(issueId, 'ISSUE', {
+            status: 'OPEN',
+            resolution: 'UNRESOLVED',
           });
           activeIssue = graph.nodes.get(issueId);
         }
@@ -55,7 +55,7 @@ export function rebuildGraph(
         const idMatch = text.match(/#?(\d{3,})/);
         if (idMatch) {
           const entityId = idMatch[1];
-          graph.setNode(entityId, "ENTITY", {
+          graph.setNode(entityId, 'ENTITY', {
             id: entityId,
           });
           graph.addEdge(activeIssue!.id, entityId);
@@ -63,8 +63,8 @@ export function rebuildGraph(
 
         // 3. Update the Issue's working context (Sticky Memory)
         const currentContext =
-          activeIssue!.properties.context || "";
-        graph.setNode(activeIssue!.id, "ISSUE", {
+          activeIssue!.properties.context || '';
+        graph.setNode(activeIssue!.id, 'ISSUE', {
           context:
             `${currentContext} | User added: "${text}"`.trim(),
         });
@@ -77,22 +77,22 @@ export function rebuildGraph(
               /(thank you|thanks|resolved|that is all)/,
             )
         ) {
-          graph.setNode(activeIssue!.id, "ISSUE", {
-            status: "CLOSED",
-            resolution: "SATISFIED",
+          graph.setNode(activeIssue!.id, 'ISSUE', {
+            status: 'CLOSED',
+            resolution: 'SATISFIED',
           });
         }
         break;
 
-      case "TOOL_RESULT":
+      case 'TOOL_RESULT':
         const { entityId, result } = event.payload;
-        graph.setNode(entityId, "ENTITY", { ...result });
+        graph.setNode(entityId, 'ENTITY', { ...result });
 
         // If the tool fails, update the parent issue to reflect the conflict
         const issue = graph.findActiveIssue();
-        if (issue && result.status === "Not Found") {
-          graph.setNode(issue.id, "ISSUE", {
-            resolution: "CONFLICT_WAITING_FOR_USER_INFO",
+        if (issue && result.status === 'Not Found') {
+          graph.setNode(issue.id, 'ISSUE', {
+            resolution: 'CONFLICT_WAITING_FOR_USER_INFO',
             failedAttemptId: entityId,
           });
         }

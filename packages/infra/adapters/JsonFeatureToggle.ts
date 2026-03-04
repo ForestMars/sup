@@ -1,5 +1,5 @@
-import { FeatureToggle, FeatureContext } from "@sup/domain/ports";
-import flags from "../../../config/flags.json";
+import { FeatureToggle, FeatureContext } from '@sup/domain/ports';
+import flags from '../../../config/flags.json';
 
 export class JsonFeatureToggle implements FeatureToggle {
   private flags: Record<string, any>;

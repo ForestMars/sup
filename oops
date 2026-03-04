@@ -1,0 +1,227 @@
+
+/Users/forestmars/sandbox/sup/apps/bedside/index.tsx
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/apps/bedside/index.tsx` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/apps/cli/adapters.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/apps/cli/adapters.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/apps/cli/chat.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/apps/cli/chat.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/eslint.config.cjs
+  15:22  error  '__dirname' is not defined  no-undef
+
+/Users/forestmars/sandbox/sup/packages/agents/adapters/ff.ts
+  18:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:37  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:42  warning  'i' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/forestmars/sandbox/sup/packages/agents/protocol-registry.ts
+  5:10  warning  'style' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/forestmars/sandbox/sup/packages/agents/style/index.ts
+  36:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  61:76  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/forestmars/sandbox/sup/packages/agents/support-agent.ts
+   18:10  warning  'OutputPort' is defined but never used               @typescript-eslint/no-unused-vars
+   21:7   warning  'FACTUTUM_MODEL' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   22:7   warning  'TEMPERATURE' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   23:7   warning  'LanguageModel' is assigned a value but never used   @typescript-eslint/no-unused-vars
+   71:14  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  154:21  error    'performance' is not defined                         no-undef
+  159:30  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  164:41  error    'performance' is not defined                         no-undef
+  196:30  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  196:52  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  196:73  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  216:16  warning  'e' is defined but never used                        @typescript-eslint/no-unused-vars
+  232:42  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/packages/domain/expertise-types.ts
+   8:10  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  16:10  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  26:18  error  An empty interface declaration allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowInterfaces' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+
+/Users/forestmars/sandbox/sup/packages/domain/output-port.ts
+  9:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/packages/domain/ports/FeatureToggle.ts
+  17:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/packages/infra/adapters/JsonFeatureToggle.ts
+   5:33  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   8:30  error    A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+   8:30  error    'require' is not defined                  no-undef
+  11:27  warning  'context' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/forestmars/sandbox/sup/packages/infra/adapters/JsonFileProvider.ts
+  19:5   warning  'context' is defined but never used       @typescript-eslint/no-unused-vars
+  20:5   warning  'logger' is defined but never used        @typescript-eslint/no-unused-vars
+  23:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:5   warning  'context' is defined but never used       @typescript-eslint/no-unused-vars
+  32:5   warning  'logger' is defined but never used        @typescript-eslint/no-unused-vars
+  35:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:5   warning  'context' is defined but never used       @typescript-eslint/no-unused-vars
+  44:5   warning  'logger' is defined but never used        @typescript-eslint/no-unused-vars
+  47:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:5   warning  'context' is defined but never used       @typescript-eslint/no-unused-vars
+  56:5   warning  'logger' is defined but never used        @typescript-eslint/no-unused-vars
+  59:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/packages/infra/adapters/hello.ts
+  17:1  error  'console' is not defined  no-undef
+
+/Users/forestmars/sandbox/sup/packages/infra/adapters/server.ts
+  38:1  error  'console' is not defined  no-undef
+
+/Users/forestmars/sandbox/sup/packages/infra/flags/index.ts
+  13:3   error  'Bun' is not defined      no-undef
+  13:42  error  'Bun' is not defined      no-undef
+  23:5   error  'console' is not defined  no-undef
+  29:19  error  'Bun' is not defined      no-undef
+  36:5   error  'console' is not defined  no-undef
+
+/Users/forestmars/sandbox/sup/packages/infra/logger/index.ts
+  11:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  30:18  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  30:18  error  'require' is not defined                  no-undef
+
+/Users/forestmars/sandbox/sup/packages/lib/graph-reducer.ts
+  22:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  23:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  44:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  55:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  65:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  88:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  92:9  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/forestmars/sandbox/sup/packages/lib/memory-graph.ts
+   9:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/packages/lib/protocol-resolver.ts
+  80:16  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/forestmars/sandbox/sup/packages/tools/adapters.ts
+  6:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/packages/tools/order-tools.ts
+   5:10  warning  'pino' is defined but never used          @typescript-eslint/no-unused-vars
+  35:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/forestmars/sandbox/sup/tests/e2e/e2e.test.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/tests/e2e/e2e.test.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/tests/integration/chat.test.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/tests/integration/chat.test.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/tests/test-agent.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/tests/test-agent.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/tests/unit/styles.test.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/tests/unit/styles.test.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/tests/unit/support-agent.test.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/tests/unit/support-agent.test.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+/Users/forestmars/sandbox/sup/types/types.ts
+  0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/types/types.ts` using `parserOptions.project`:
+- <tsconfigRootDir>/packages/agents/tsconfig.json
+- <tsconfigRootDir>/packages/domain/tsconfig.json
+- <tsconfigRootDir>/packages/infra/tsconfig.json
+- <tsconfigRootDir>/packages/lib/tsconfig.json
+- <tsconfigRootDir>/packages/tools/tsconfig.json
+However, none of those TSConfigs include this file. Either:
+- Change ESLint's list of included files to not include this file
+- Change one of those TSConfigs to include this file
+- Create a new TSConfig that includes this file and include it in your parserOptions.project
+See the typescript-eslint docs for more info: https://tseslint.com/none-of-those-tsconfigs-include-this-file
+
+✖ 75 problems (55 errors, 20 warnings)
+
