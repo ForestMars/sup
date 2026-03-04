@@ -69,3 +69,5 @@ out.dump.*
 .rabbitmq
 .redis
 
+.aider*
+.env
