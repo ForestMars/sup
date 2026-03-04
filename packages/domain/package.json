@@ -2,14 +2,25 @@
   "name": "@sup/domain",
   "typesVersions": {
     "*": {
-      "ports": ["./ports/index.ts"],
-      "types": ["./types/index.ts"],
-      "expertise-types": ["./expertise-types.ts"],
-      "output-port": ["./output-port.ts"]
+      "ports": [
+        "./ports/index.ts"
+      ],
+      "types": [
+        "./types/index.ts"
+      ],
+      "expertise-types": [
+        "./expertise-types.ts"
+      ],
+      "output-port": [
+        "./output-port.ts"
+      ]
     }
   },
   "exports": {
     ".": "./index.ts",
-    "./ports": "./ports"
+    "./ports": "./ports/index.ts",
+    "./types": "./types/index.ts",
+    "./expertise-types": "./expertise-types.ts",
+    "./output-port": "./output-port.ts"
   }
 }
