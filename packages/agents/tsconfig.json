@@ -1,13 +1,12 @@
 {
-  "extends": "../../tsconfig.base.tsconfig.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
     "rootDir": "./",
     "outDir": "./dist"
   },
   "include": [
-    "**/*.ts",
-    "../../apps/cli/chat.ts" // Only include if agents "owns" the CLI entry
+    "**/*.ts"
   ],
   "exclude": ["node_modules", "dist", "**/tests/*"],
   "references": [
