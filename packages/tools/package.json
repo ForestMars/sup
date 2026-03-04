@@ -1,4 +1,16 @@
 {
-  "name": "@tools"
+  "name": "@sup/tools",
+  "dependencies": {
+    "@sup/domain": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "bun": "./index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./order-tools": "./order-tools.ts",
+    "./tools": "./tools/index.ts"
+  }
 }
-
