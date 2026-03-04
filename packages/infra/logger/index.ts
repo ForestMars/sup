@@ -16,7 +16,7 @@ const isTerminal = process.stdout.isTTY;
 const isDev = process.env.NODE_ENV !== 'production';
 const lokiEnabled = process.env.LOKI_ENABLED === 'true';
 
-let streams: pino.StreamEntry[] = [];
+const streams: pino.StreamEntry[] = [];
 
 const lokiStream = await pinoLoki({
   host: process.env.LOKI_HOST || 'http://localhost:3100',

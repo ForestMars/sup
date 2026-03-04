@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { test, expect } from 'bun:test';
 import { supportAgent } from '@sup/agents/support-agent';
 import { entityLookupTool } from '@sup/tools/order-tools';
 

@@ -70,7 +70,7 @@ test('agent returns direct text when no tool invocation needed', async () => {
   const session = { id: 'test-session-2', events: [] } as any;
   const gen = supportAgent('Say hello', session, { client: mock, tools });
   
-  let steps: string[] = [];
+  const steps: string[] = [];
   let finalText = '';
 
   for await (const step of gen) {
@@ -84,7 +84,7 @@ test('agent returns direct text when no tool invocation needed', async () => {
   expect(steps).toContain('thinking');
   expect(steps).toContain('final');
   expect(steps).not.toContain('tool_call');
-  expect(finalText.toLowerCase()).toContain("hello");
+  expect(finalText.toLowerCase()).toContain('hello');
   expect(finalText.length).toBeGreaterThan(5);
 }, TEST_TIMEOUT);
 
