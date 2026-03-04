@@ -21,7 +21,6 @@ npm-debug.log
 
 # Typescript
 *,js
-*.cjs
 *.mjs
 
 
