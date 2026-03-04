@@ -1,9 +1,9 @@
 /**
  * @file /packages/agents/src/adapters/style.adapter.ts
- * @description Decorator for the Agent's AsyncGenerator. 
+ * @description Decorator for the Agent's AsyncGenerator.
  * Intercepts the 'final' step to inject test-style formatting.
  */
-import type { AgentStep } from '../types/agent-types'; // Adjust based on your actual path
+import type { AgentStep } from '@sup/types/types'; // Adjust based on your actual path
 
 /**
  * Intercepts the supportAgent generator and prepends the test string.
