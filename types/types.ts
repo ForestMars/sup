@@ -102,7 +102,7 @@ export interface AgentConfig {
 export type AgentEvent =
   | {
       type: "USER_UPDATE";
-      payload: string;
+      payload: {text: string};
       timestamp: number;
     }
   | {
@@ -117,7 +117,7 @@ export type AgentEvent =
     }
   | {
       type: "TOOL_RESULT";
-      payload: { entityId: string; result: any };
+      payload: { toolId: string; entityId: string; result: any };
       timestamp: number;
     };
 
@@ -125,6 +125,8 @@ export type AgentEvent =
  */
 export interface AgentSession {
   sessionId: string;
+  userId: string;
+  id: string;
   events: AgentEvent[];
   // This is our "World Model" - the current state of the subnet
   worldModel: {
