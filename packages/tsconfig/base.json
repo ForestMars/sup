@@ -1,39 +1,25 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "composite": true,            // Keep composite for project references
-    "noEmit": false,              // (Must be false for composite to function)
-    "declaration": true,          // Generates the .d.ts files for isolation
-    "declarationMap": true,       // Allows "Go to Definition" to work across layers
-    "emitDeclarationOnly": true,  // Prevents .js files from being created
-    "esModuleInterop": true,      // Needed to handle our CommonJS frens (OpenFeature, Pino)
-    "allowSyntheticDefaultImports": true, // for type-checking default imports to match Bun/Vite runtime behavior
-    "lib": ["ESNext", "dom"],
-    "module": "es2020",
-    "target": "es2020",
     "moduleResolution": "bundler",
-    "moduleDetection": "force",
-    "allowImportingTsExtensions": true,
-    "downlevelIteration": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["bun-types"],
-    "paths": {
-      // This should be removed for production grade code.
-      "@*": ["./*"]
-    },
-    "baseUrl": "packages" // This one also is a bit of a hack that's not ideal for production.
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "types": ["bun-types"]
   },
+  "files": [],
   "references": [
-    { "path": "./packages/agents" },
-    { "path": "./packages/domain" },
-    { "path": "./packages/infra" },
-    { "path": "./packages/lib" },
-    { "path": "./packages/tools" }
-  ],
-  "include": ["apps/**/*", "packages/**/*"],
-  "exclude": ["node_modules"]
+    { "path": "types" },
+    { "path": "packages/domain" },
+    { "path": "packages/infra" },
+    { "path": "packages/tools" },
+    { "path": "packages/lib" },
+    { "path": "packages/agents" }
+  ]
 }
