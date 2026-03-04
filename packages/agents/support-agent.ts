@@ -68,7 +68,7 @@ export async function* supportAgent(
   session: AgentSession,
   opts?: {
     // output: OutputPort;
-    client?: LanguageModel; // AI SDK type, can be a mock for testing.
+    client?: any // LanguageModel; AI SDK type, can be a mock for testing.
     resolver?: ExpertiseResolverPort;
     tools?: Record<string, ToolAdapterPort>
     }
@@ -156,7 +156,7 @@ export async function* supportAgent(
   const response = await generateText({
     model,
     system: systemPrompt,
-    tools: protocol.tools,
+    tools: protocol.tools as any, // 😬
     prompt: fullPrompt,
     // temperature: supportAgentConfig.temperature
   });
@@ -167,7 +167,7 @@ export async function* supportAgent(
   const text = response.text.trim();
   logger.debug(`\n[DEBUG] LLM Raw Output (Text Content): """\n${text}\n"""\n`);
   if (response.toolCalls.length > 0) {
-    logger.debug(`\n[DEBUG] @@@@@@ Native Tool Calls Found:`, JSON.stringify(response.toolCalls, null, 2));
+    logger.debug(`\n[DEBUG] @@@@@@ Native Tool Calls Found: ${JSON.stringify(response.toolCalls, null, 2)}`);
   }
 
    logger.info({
@@ -193,7 +193,7 @@ export async function* supportAgent(
     if (isLookup) {
       // Defensively find the arguments object.
       // Checks .args (standard AI SDK) OR .input (seen in some provider variants)
-      const args = (call.args || (call as any).input || {}) as any;
+      const args = ((call as any).args || (call as any).input || {}) as any; // 😬😬😬
       const rawId = args.entityId || args.order_id || args.order_number || args.id;
 
       if (rawId !== undefined) {
@@ -222,7 +222,7 @@ export async function* supportAgent(
     const { entityId } = toolCall;
     const toolId = toolCall.tool;
 
-    yield { type: 'tool_call', timestamp: Date.now(), toolId, parameters: { entityId } };
+    yield { 'toolName': toolId, type: 'tool_call', timestamp: Date.now(), toolId, parameters: { entityId } };
 
     // Execute the tool via injected tool adapters
     const toolAdapter = opts?.tools?.[toolId];
