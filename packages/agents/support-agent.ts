@@ -15,12 +15,13 @@ import type { ExpertiseResolverPort, ToolAdapterPort } from '@sup/domain/experti
 import { rebuildGraph } from '@sup/lib/graph-reducer';
 import { logger } from '@sup/infra/logger';
 import { CONTEXT_ANCHOR } from '@sup/agents/config';
-import { OutputPort } from '@sup/domain';
+// import { OutputPort } from '@sup/domain';
 
-const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
-const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
-const TEMPERATURE = 0;
-const LanguageModel = DEFAULT_MODEL;
+// const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
+const DEFAULT_MODEL = 'qwen3:8b';
+// const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
+// const TEMPERATURE = 0;
+// const LanguageModel = DEFAULT_MODEL;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const instructions = readFileSync(join(__dirname, '..', '..', 'config', 'agent-instructions.txt'), 'utf-8');
@@ -161,6 +162,12 @@ export async function* supportAgent(
     // temperature: supportAgentConfig.temperature
   });
 
+  logger.debug({ response: JSON.stringify(Object.keys(response)) }, 'raw_response_keys');
+  logger.debug({ responseKeys: Object.keys(response), stepsKeys: response.steps?.[0] ? Object.keys(response.steps[0]) : [] }, 'response_structure');
+  logger.debug({ providerMetadata: response.steps?.[0]?.providerMetadata }, 'provider_metadata');
+  logger.debug({ raw: JSON.stringify(response, null, 2) }, 'complete_raw_response');
+  console.log("===================")
+  console.log(JSON.stringify(response, null, 2));
   const inferenceLatencyMs = Math.round(performance.now() - startTime);
   const outputTokens = response.text ? Math.ceil(response.text.length / 4) : 0;
 
@@ -194,7 +201,7 @@ export async function* supportAgent(
       // Defensively find the arguments object.
       // Checks .args (standard AI SDK) OR .input (seen in some provider variants)
       const args = ((call as any).args || (call as any).input || {}) as any; // 😬😬😬
-      const rawId = args.entityId || args.order_id || args.order_number || args.id;
+      const rawId = args.entityId || args.order_id || args.order_number || args.invoice_id || args.id;
 
       if (rawId !== undefined) {
         toolCall = {
@@ -213,7 +220,7 @@ export async function* supportAgent(
       try {
         const validated = toolCallSchema.safeParse(JSON.parse(jsonMatch[0]));
         if (validated.success) toolCall = validated.data;
-      } catch (e) { /* Fallback to conversational */ }
+      } catch (_e) { /* Fallback to conversational */ }
     }
   }
 
