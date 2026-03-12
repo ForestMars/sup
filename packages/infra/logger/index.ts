@@ -24,8 +24,6 @@ const lokiStream = await pinoLoki({
   batching: { interval: 5 },
 });
 
-let loggerInstance: pino.Logger;
-
 if (isTerminal && isDev) {
   const pretty = require('pino-pretty')({
     colorize: true,
@@ -46,7 +44,7 @@ if (lokiEnabled) {
   streams.push({ stream: lokiStream, level: 'info' });
 }
 
-loggerInstance = pino(
+const loggerInstance = pino(
   {
     level: isDev ? 'debug' : 'info',
     base: { model: MODEL_NAME, runtime: 'bun' },
