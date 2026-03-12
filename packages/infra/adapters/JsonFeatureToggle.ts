@@ -1,5 +1,5 @@
-import { FeatureToggle, FeatureContext } from "@sup/domain/ports";
-import flags from "../../../config/flags.json";
+import { FeatureToggle, FeatureContext } from '@sup/domain/ports';
+import flags from '../../../config/flags.json';
 
 export class JsonFeatureToggle implements FeatureToggle {
   private flags: Record<string, any>;
@@ -8,7 +8,7 @@ export class JsonFeatureToggle implements FeatureToggle {
     this.flags = flagsPath ? require(flagsPath) : flags;
   }
 
-  isEnabled(flag: string, context?: FeatureContext): boolean {
+  isEnabled(flag: string, _context?: FeatureContext): boolean {
     return this.flags[flag]?.enabled ?? false;
   }
 

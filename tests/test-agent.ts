@@ -14,9 +14,20 @@ async function runSmokeTest() {
     'invoice-status-lookup': entityLookupTool,
     'invoice-status': entityLookupTool,
     'order-lookup': entityLookupTool,
+    'invoice_status_lookup': entityLookupTool,
   } as any;
 
-  const gen = supportAgent(input, undefined, { tools });
+  const session = { 
+    sessionId: 'test-session', 
+    userId: 'test-user', 
+    id: 'test-session', 
+    events: [],
+    worldModel: {
+      unresolvedEntities: {},
+      lookupFailures: []
+    }
+  };
+  const gen = supportAgent(input, session, { tools });
 
   let finalText = '';
   for await (const step of gen) {
@@ -26,8 +37,8 @@ async function runSmokeTest() {
     }
   }
 
-  logger.info('User:', input);
-  logger.info('Agent Final:', finalText);
+  logger.info({ user: input }, 'User input');
+  logger.info({ agentFinal: finalText }, 'Agent Final response');
 
   // Validate the final response is natural language and contains expected info
   const looksLikeToolJson = /^\s*\{\s*"tool"/i.test(finalText.trim());

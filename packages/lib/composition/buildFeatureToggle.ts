@@ -1,8 +1,8 @@
-import { FeatureToggle } from "@sup/domain/ports";
-import { JsonFeatureToggle } from "@sup/infra/adapters";
+import { FeatureToggle } from '@sup/domain/ports';
+import { JsonFeatureToggle } from '@sup/infra/adapters';
 
 export function buildFeatureToggle(env: string): FeatureToggle {
-  if (env === "production") {
+  if (env === 'production') {
     // Could swap to LaunchDarkly here
     return new JsonFeatureToggle();
   }

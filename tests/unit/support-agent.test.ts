@@ -70,7 +70,7 @@ test('agent returns direct text when no tool invocation needed', async () => {
   const session = { id: 'test-session-2', events: [] } as any;
   const gen = supportAgent('Say hello', session, { client: mock, tools });
   
-  let steps: string[] = [];
+  const steps: string[] = [];
   let finalText = '';
 
   for await (const step of gen) {
@@ -84,7 +84,7 @@ test('agent returns direct text when no tool invocation needed', async () => {
   expect(steps).toContain('thinking');
   expect(steps).toContain('final');
   expect(steps).not.toContain('tool_call');
-  expect(finalText.toLowerCase()).toContain("hello");
+  expect(finalText.toLowerCase()).toContain('hello');
   expect(finalText.length).toBeGreaterThan(5);
 }, TEST_TIMEOUT);
 
@@ -98,7 +98,7 @@ test('agent remembers order #999 when context is added in second turn', async ()
   } as any;
 
   const turn1Gen = supportAgent('Where is #999?', session, { tools });
-  for await (const _ of turn1Gen) {} // Let it run and fail tool lookup
+  for await (const __ of turn1Gen) {} // Let it run and fail tool lookup
 
   // Turn 2: Add context (The "January 18" turn)
   const turn2Gen = supportAgent('I ordered it on January 18', session, { tools });

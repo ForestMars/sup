@@ -2,9 +2,9 @@
  * @file index.ts
  * @description Central registry for all support tools.
  */
-import { entityLookupTool } from "./order-tools";
+import { entityLookupTool } from './order-tools';
 // import { itTicketTool } from './it-tools';
-import adapters, { entityLookupAdapter } from "./adapters";
+import adapters, { entityLookupAdapter } from './adapters';
 // ... other 8 tools
 
 export const toolRegistry = [
@@ -21,4 +21,4 @@ export {
   baseTools,
   billingTools,
   resolutionTools,
-} from "./order-tools";
+} from './order-tools';

@@ -1,21 +1,19 @@
 {
   "name": "@sup/agents",
-  "extends": "../tsconfig/base.json",
-  "compilerOptions": {
-    "composite": true,
-    "rootDir": "./",
-    "outDir": "./dist",
-    "typeRoots": [
-      "../../node_modules/@types",
-      "../../node_modules"
-    ]
+  "version": "0.2.0",
+  "exports": {
+    ".": "./index.ts",
+    "./config": "./config.ts",
+    "./style/": "./style/index.ts",
+    "./support-agent": "./support-agent.ts",
+    "./adapters/output-adapters": "./adapters/output-adapters.ts"
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/tests/*"],
-  "references": [
-    { "path": "../domain" },
-    { "path": "../infra" },
-    { "path": "../tools" },
-    { "path": "../lib" }
-  ]
+  "dependencies": {
+    "@sup/domain": "workspace:*",
+    "@sup/infra": "workspace:*",
+    "@sup/lib": "workspace:*",
+    "@sup/tools": "workspace:*",
+    "ai": "*",
+    "ai-sdk-ollama": "*"
+  }
 }

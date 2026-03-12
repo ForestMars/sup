@@ -3,7 +3,7 @@
  * @description Integration test for the CLI loop.
  */
 
-import { test, expect, spyOn, describe, beforeEach, afterEach, mock as bunMock } from "bun:test";
+import { test, expect, spyOn, describe, beforeEach, afterEach, mock as bunMock } from 'bun:test';
 import * as readline from 'node:readline/promises';
 
 // Using @ alias for F500-standard architecture

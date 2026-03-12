@@ -5,18 +5,18 @@
  * @module tools/order-tools.test
  */
 
-import { test, expect, describe } from "bun:test";
-import { entityLookupTool } from "./order-tools";
+import { test, expect, describe } from 'bun:test';
+import { entityLookupTool } from './order-tools';
 
-describe("entityLookupTool", () => {
+describe('entityLookupTool', () => {
   /**
    * Verified: The tool correctly retrieves existing records.
    */
   test('returns "Shipped" for ID 12345', async () => {
     const result = await entityLookupTool.execute({
-      entityId: "12345",
+      entityId: '12345',
     });
-    expect(result.status).toBe("Shipped");
+    expect(result.status).toBe('Shipped');
   });
 
   /**
@@ -24,9 +24,9 @@ describe("entityLookupTool", () => {
    */
   test('normalizes IDs containing the "#" symbol', async () => {
     const result = await entityLookupTool.execute({
-      entityId: "#12345",
+      entityId: '#12345',
     });
-    expect(result.status).toBe("Shipped");
+    expect(result.status).toBe('Shipped');
   });
 
   /**
@@ -34,9 +34,9 @@ describe("entityLookupTool", () => {
    */
   test('returns "Not Found" for unregistered IDs', async () => {
     const result = await entityLookupTool.execute({
-      entityId: "999",
+      entityId: '999',
     });
-    expect(result.status).toBe("Not Found");
-    expect(result.deliveryDate).toBe("N/A");
+    expect(result.status).toBe('Not Found');
+    expect(result.deliveryDate).toBe('N/A');
   });
 });

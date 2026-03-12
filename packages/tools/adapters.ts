@@ -1,5 +1,5 @@
-import { entityLookupTool } from "./order-tools";
-import type { ToolAdapterPort } from "@sup/domain/expertise-types";
+import { entityLookupTool } from './order-tools';
+import type { ToolAdapterPort } from '@sup/domain/expertise-types';
 
 // Simple adapter that forwards to the concrete tool implementation.
 export const entityLookupAdapter: ToolAdapterPort & {
@@ -14,11 +14,12 @@ export const adapters: Record<
   string,
   typeof entityLookupAdapter
 > = {
-  "entity-status-lookup": entityLookupAdapter,
-  "invoice-status-lookup": entityLookupAdapter,
-  "invoice-status": entityLookupAdapter,
-  "order-lookup": entityLookupAdapter,
-  "entity-lookup": entityLookupAdapter,
+  'entity-status-lookup': entityLookupAdapter,
+  'invoice-status-lookup': entityLookupAdapter,
+  'invoice-status': entityLookupAdapter,
+  'order-lookup': entityLookupAdapter,
+  'entity-lookup': entityLookupAdapter,
+  'invoice_status_lookup': entityLookupAdapter,
 };
 
 export default adapters;

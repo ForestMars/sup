@@ -1,64 +1,49 @@
 import js from '@eslint/js';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
+import tseslint from 'typescript-eslint';
+import globals from 'globals';
 
-export default [
-  // 1. Global Ignores (Replaces ignorePatterns)
+export default tseslint.config(
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/*.json',
-      '**/tsconfig.json',
-      'eslint.config.mjs',
-      '**/*.yaml',
-      '**/*.yml',
-    ],
+    ignores: ['**/dist/**', '**/node_modules/**', 'eslint.config.*'],
   },
-  
-  // 2. Base Configuration
   js.configs.recommended,
-  
+  ...tseslint.configs.recommended,
   {
+    // Apply this to everything
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: tsParser,
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+        Bun: 'readonly',
+      },
       parserOptions: {
-        ecmaVersion: 2020,
-        sourceType: 'module',
-        project: ['./packages/*/tsconfig.json'],
+        projectService: {
+          allowDefaultProject: ['*.ts', 'eslint.config.mjs'],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
-      globals: {
-        // Equivalent to env: { node: true }
-        process: 'readonly',
-        __dirname: 'readonly',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
     },
     rules: {
-      ...tsPlugin.configs.recommended.rules,
-      
-      // Formatting and Logic
       'semi': ['error', 'always'],
       'quotes': ['error', 'single', { avoidEscape: true }],
-      
-      // TypeScript Specifics
-      'no-unused-vars': 'off', 
-      '@typescript-eslint/no-unused-vars': ['warn'],
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-case-declarations': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-undef': 'error',
+      // This rule causes the crash on files without a tsconfig
+      '@typescript-eslint/no-floating-promises': 'warn', 
     },
   },
-  
-  // 3. Overrides (Example for tests)
   {
-    files: ['**/*.test.ts', '**/*.spec.ts'],
+    // FIX: Disable type-aware rules for files NOT in your packages (CLI, tests, etc.)
+    // This stops the "don't have parserOptions set" crash.
+    files: ['apps/cli/**/*.ts', 'tests/**/*.ts', 'apps/bedside/**/*.tsx'],
+    extends: [tseslint.configs.disableTypeChecked],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-    },
+      // Explicitly turn off the rule that's crashing the CLI linter
+      '@typescript-eslint/no-floating-promises': 'off',
+    }
   }
-];
+);

@@ -44,7 +44,7 @@ export class MemoryGraph {
   }
 
   serialize(): string {
-    let out = "### KNOWLEDGE_GRAPH_STATE\n";
+    let out = '### KNOWLEDGE_GRAPH_STATE\n';
     const nodes = Array.from(this.nodes.values());
 
     // Separate active issues from archived history
@@ -52,14 +52,14 @@ export class MemoryGraph {
     const archivedNodes = nodes.filter(n => n.properties.resolutionState === 'RESOLVED');
 
     if (activeNodes.length > 0) {
-      out += ">> ACTIVE_FOCUS_ITEMS:\n";
+      out += '>> ACTIVE_FOCUS_ITEMS:\n';
       activeNodes.forEach(n => {
         out += ` - [${n.type}] ID: ${n.id} | STATE: ${n.properties.resolutionState} | CONTEXT: ${n.properties.context || 'None'}\n`;
       });
     }
 
     if (archivedNodes.length > 0) {
-      out += ">> ARCHIVED_HISTORY (DO NOT RE-OPEN):\n";
+      out += '>> ARCHIVED_HISTORY (DO NOT RE-OPEN):\n';
       archivedNodes.forEach(n => out += ` - ${n.type} ${n.id}: RESOLVED\n`);
     }
   

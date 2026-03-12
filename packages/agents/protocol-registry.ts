@@ -2,7 +2,7 @@
  * @file protocol-registry.ts
  * @description Central registry for agent protocols, defining skill paths, tools, and priorities.
  */
-import { style } from './style'; // Now in the right place
+// import { style } from './style'; // Now in the right place
 import { billingTools, resolutionTools, baseTools } from '@sup/tools';
 import { Protocol } from '@sup/domain/expertise-types';
 
