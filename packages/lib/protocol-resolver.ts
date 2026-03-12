@@ -77,7 +77,7 @@ export const ProtocolResolver: ExpertiseResolverPort = {
           selection.skillPath,
         );
         skillContent = readFileSync(fullPath, 'utf-8');
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           `[PROTOCOL_ERROR] Failed to load skill at ${selection.skillPath}`,
         );
