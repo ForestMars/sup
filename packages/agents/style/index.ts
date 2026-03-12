@@ -51,7 +51,7 @@ function summarizeResult(toolResult: any) {
     // Fallback to JSON
     try {
       return JSON.stringify(toolResult);
-    } catch (e) {
+    } catch (_e) {
       return String(toolResult);
     }
   }
@@ -65,7 +65,7 @@ export function formatToolResult(style: Style, tool: ToolMeta, toolResult: any, 
   if (style === 'raw' || style === 'none') {
     try {
       return typeof toolResult === 'string' ? toolResult : JSON.stringify(toolResult);
-    } catch (e) {
+    } catch (_e) {
       return String(toolResult);
     }
   }
