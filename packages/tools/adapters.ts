@@ -19,6 +19,7 @@ export const adapters: Record<
   'invoice-status': entityLookupAdapter,
   'order-lookup': entityLookupAdapter,
   'entity-lookup': entityLookupAdapter,
+  'invoice_status_lookup': entityLookupAdapter,
 };
 
 export default adapters;
