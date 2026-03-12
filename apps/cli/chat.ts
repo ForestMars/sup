@@ -14,7 +14,7 @@ import {
   MultiProvider,
   FirstSuccessfulStrategy,
 } from '@openfeature/server-sdk';
-import { z } from 'zod';
+// import { z } from 'zod';
 
 import { logger } from '@sup/infra/logger';
 import type { AgentStep } from '@sup/types/agent-types';
@@ -58,7 +58,7 @@ await OpenFeature.setProviderAndWait(multiProvider);
 
 const fflags = OpenFeature.getClient();
 
-const activeAdapters = [];
+// const activeAdapters = [];
 
 /**
  * Main chat loop logic, exported for integration testing.
