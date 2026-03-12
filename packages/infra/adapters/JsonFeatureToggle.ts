@@ -8,7 +8,7 @@ export class JsonFeatureToggle implements FeatureToggle {
     this.flags = flagsPath ? require(flagsPath) : flags;
   }
 
-  isEnabled(flag: string, context?: FeatureContext): boolean {
+  isEnabled(flag: string, _context?: FeatureContext): boolean {
     return this.flags[flag]?.enabled ?? false;
   }
 
