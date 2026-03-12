@@ -2,7 +2,7 @@
  * @file packages/tools/order-tools.ts
  * @description Tools for looking up order and entity status in the central Oracle database.
  */
-import { pino } from 'pino';
+// import { pino } from 'pino';
 import { z } from 'zod';
 
 import { logger } from '@sup/infra/logger';
