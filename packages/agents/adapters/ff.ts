@@ -32,7 +32,7 @@ export async function* flaggedSupportAgent(
     tools: adapters,
     formatter: flags.style
       ? formatToolResult
-      : (s: string, t: ToolMeta, r: any, i: string) => JSON.stringify(r),
+      : (s: string, t: ToolMeta, r: any, _i: string) => JSON.stringify(r),
     enableWebSearch: flags.web,
     useAdvancedRouter: flags.routing,
   };
