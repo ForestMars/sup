@@ -29,6 +29,10 @@ async function generate() {
               ...content,
               // Relative path for the runtime loader to use
               importPath: path.relative(TOOLS_ROOT, path.join(fullPath, content.entry || "index.ts"))
+              // Even better: 
+              // importPath: path.relative(TOOLS_ROOT, path.join(fullPath, content.entry || "index.ts")).replace(/\\/g, '/')
+
+
             });
             continue; // Found a tool, no need to go deeper into this specific folder
           }
