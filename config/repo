@@ -1,23 +1,28 @@
-// packages/config/repo.ts
-import { logger } from "@sup/logger";
+/**
+ * @file /config/repo.ts
+ */
+export const repoConfig = {
+  owner: 'ForestMars',
+  repo: 'coffee',
+  token: process.env.GITHUB_TOKEN, // Still pulled from env for security
+};
 
-const token = process.env.GITHUB_TOKEN;
-
+/**
+ * Basic health check to see if the token actually works
+ */
 export async function validateGitHubCapability(): Promise<boolean> {
-  if (!token) return false;
-
+  if (!repoConfig.token) return false;
+  
   try {
-    // A lightweight "sanity check" call
-    const res = await fetch("https://api.github.com/user", {
-      headers: { Authorization: `Bearer ${token}` }
+    // Just a lightweight check to verify the token is valid for this repo
+    const response = await fetch(`https://api.github.com/repos/${repoConfig.owner}/${repoConfig.repo}`, {
+      headers: {
+        Authorization: `Bearer ${repoConfig.token}`,
+        'User-Agent': 'sup-agent-health-check'
+      }
     });
-    
-    if (res.ok) return true;
-    
-    logger.error({ status: res.status }, "GITHUB_TOKEN found but invalid or expired.");
-    return false;
-  } catch (e) {
-    logger.error(e, "Failed to reach GitHub during capability validation.");
+    return response.ok;
+  } catch {
     return false;
   }
 }
