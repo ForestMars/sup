@@ -15,6 +15,7 @@ import type { ExpertiseResolverPort, ToolAdapterPort } from '@sup/domain/experti
 import { rebuildGraph } from '@sup/lib/graph-reducer';
 import { logger } from '@sup/infra/logger';
 import { CONTEXT_ANCHOR } from '@sup/agents/config';
+import { tools as registry, runTool } from "@sup/tools";
 // import { OutputPort } from '@sup/domain';
 
 // const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
@@ -157,10 +158,56 @@ export async function* supportAgent(
   const response = await generateText({
     model,
     system: systemPrompt,
-    tools: protocol.tools as any, // 😬
+    // tools: protocol.tools as any, // 😬 This is a smoke test for sanity checking. 
+    tools: Object.fromEntries(
+      registry.map((t) => [
+        t.name,
+        {
+          description: t.description,
+          parameters: t.parameters, // JSON Schema from manifest.json
+          execute: async (args) => { 
+            logger.info({ tool: t.name, args }, 'executing_tool');
+            return await runTool(t.name, args);
+          },
+        },
+      ])
+    ),
     prompt: fullPrompt,
     // temperature: supportAgentConfig.temperature
   });
+
+  // Since 'execute' is provided above, the SDK handles the call. 
+  // We just iterate through results to update our session state and yield to the user.
+  if (response.toolResults && response.toolResults.length > 0) {
+    for (const result of response.toolResults) {
+      session.events.push({
+        type: 'TOOL_RESULT',
+        payload: { 
+          toolId: result.toolName, 
+          result: result.result 
+        },
+        timestamp: Date.now()
+      });
+
+      yield { 
+        type: 'tool_result', 
+        timestamp: Date.now(), 
+        toolId: result.toolName, 
+        result: result.result 
+      };
+    }
+    // Synthesis turn to let the agent respond naturally with the tool's data
+    const finalResponse = await generateText({
+      model,
+      system: systemPrompt,
+      prompt: `The tool returned: "${response.toolResults[0].result}". Summarize this for the user.`,
+    });
+
+    yield { type: 'final', timestamp: Date.now(), text: finalResponse.text };
+  } else {
+    yield { type: 'final', timestamp: Date.now(), text: response.text.trim() };
+  }
+  
 
   logger.debug({ response: JSON.stringify(Object.keys(response)) }, 'raw_response_keys');
   logger.debug({ responseKeys: Object.keys(response), stepsKeys: response.steps?.[0] ? Object.keys(response.steps[0]) : [] }, 'response_structure');
