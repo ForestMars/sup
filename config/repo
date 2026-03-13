@@ -1,0 +1,23 @@
+// packages/config/repo.ts
+import { logger } from "@sup/logger";
+
+const token = process.env.GITHUB_TOKEN;
+
+export async function validateGitHubCapability(): Promise<boolean> {
+  if (!token) return false;
+
+  try {
+    // A lightweight "sanity check" call
+    const res = await fetch("https://api.github.com/user", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    if (res.ok) return true;
+    
+    logger.error({ status: res.status }, "GITHUB_TOKEN found but invalid or expired.");
+    return false;
+  } catch (e) {
+    logger.error(e, "Failed to reach GitHub during capability validation.");
+    return false;
+  }
+}
