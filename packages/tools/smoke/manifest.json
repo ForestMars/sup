@@ -1,0 +1,12 @@
+{
+  "name": "smoke",
+  "description": "A sanity check tool to verify tool-calling is working. Triggered when the user asks what day it is.",
+  "entry": "index.ts",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string", "description": "The user's question about the date or time" }
+    },
+    "required": ["query"]
+  }
+}

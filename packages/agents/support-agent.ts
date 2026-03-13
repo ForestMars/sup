@@ -15,12 +15,14 @@ import type { ExpertiseResolverPort, ToolAdapterPort } from '@sup/domain/experti
 import { rebuildGraph } from '@sup/lib/graph-reducer';
 import { logger } from '@sup/infra/logger';
 import { CONTEXT_ANCHOR } from '@sup/agents/config';
+import { tools as registry, runTool } from "@sup/tools";
 // import { OutputPort } from '@sup/domain';
 
 // const DEFAULT_MODEL = 'qwen2.5:7b'; // AGENT_MODEL
 const DEFAULT_MODEL = 'qwen3:8b';
-// const FACTUTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
-// const TEMPERATURE = 0;
+// const DEFAULT_MODEL = 'deepseek-r1' // Does not support tools
+// const FACTOTUM_MODEL = 'qwen2.5:1.5b'; // Helper model for tool calls and retrieval-augmented steps.
+const TEMPERATURE = 0;
 // const LanguageModel = DEFAULT_MODEL;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,7 +32,7 @@ const supportAgentConfig: AgentConfig = {
   name: 'SupportBot',
   model: process.env.SUPPORT_AGENT_MODEL || DEFAULT_MODEL,
   instructions,
-  // temperature: TEMPERATURE,
+  temperature: TEMPERATURE,
   tools: []
 };
 
@@ -53,13 +55,15 @@ function buildConversationHistory(events: AgentEvent[]): string {
         return `User: ${e.payload.text}`;
       }
       if (e.type === 'TOOL_RESULT') {
-        return `System: Retrieved entity ${e.payload.entityId} → ${JSON.stringify(e.payload.result)}`;
+        // Fix: Access e.payload.result directly.
+        return `System: [Tool: ${e.payload.toolId}] Output → ${JSON.stringify(e.payload.result)}`;
       }
       return null;
     })
     .filter(Boolean)
     .join('\n');
 }
+
 
 /**
  * Generator-based support agent using Global Workspace Theory.
@@ -108,12 +112,6 @@ export async function* supportAgent(
     message: 'Consulting internal knowledge graph...'
   };
 
-  logger.debug(`[DEBUG] Protocol System Prompt Length: ${protocol.systemPrompt?.length}`);
-  logger.debug(`[DEBUG] Full System Prompt Sample: "${protocol.systemPrompt?.substring(0, 100)}..."`);
-  logger.debug(`[DEBUG] EVENT_LOG_LENGTH: ${session.events.length}`);
-  logger.debug(`[DEBUG] RECENT_EVENTS: ${JSON.stringify(session.events.slice(-2))}`);
-  logger.debug(`[DEBUG] GRAPH_CONTEXT_SENT: """\n${graphContext}\n"""`);
-
   /** NFERENCE: Call LLM with instructions and the serialized Graph State.
    * Prompt ordering matters for small models — place behavioral instructions
    * before the data they govern, and gate the graph with an explicit instruction
@@ -151,128 +149,102 @@ export async function* supportAgent(
  * @see {@link logger} for 'inference_complete' event structure.
  */
   const prompt = systemPrompt + '\n\n' + fullPrompt;
-  const inputTokens = Math.ceil(prompt.length / 4);
   const startTime = performance.now();
 
   const response = await generateText({
     model,
     system: systemPrompt,
-    tools: protocol.tools as any, // 😬
+    temperature: supportAgentConfig.temperature,
+    tools: Object.fromEntries(
+      registry.map((t) => [
+        t.name,
+        {
+          description: t.description,
+          parameters: t.parameters,
+          execute: async (args) => await runTool(t.name, args),
+        },
+      ])
+    ),
     prompt: fullPrompt,
-    // temperature: supportAgentConfig.temperature
   });
 
-  logger.debug({ response: JSON.stringify(Object.keys(response)) }, 'raw_response_keys');
-  logger.debug({ responseKeys: Object.keys(response), stepsKeys: response.steps?.[0] ? Object.keys(response.steps[0]) : [] }, 'response_structure');
-  logger.debug({ providerMetadata: response.steps?.[0]?.providerMetadata }, 'provider_metadata');
-  logger.debug({ raw: JSON.stringify(response, null, 2) }, 'complete_raw_response');
-  console.log("===================")
-  console.log(JSON.stringify(response, null, 2));
-  const inferenceLatencyMs = Math.round(performance.now() - startTime);
-  const outputTokens = response.text ? Math.ceil(response.text.length / 4) : 0;
+  // Unified Tool Result Collection
+  let toolResults: { toolName: string; result: any; args: any }[] = [];
 
-  const text = response.text.trim();
-  logger.debug(`\n[DEBUG] LLM Raw Output (Text Content): """\n${text}\n"""\n`);
-  if (response.toolCalls.length > 0) {
-    logger.debug(`\n[DEBUG] @@@@@@ Native Tool Calls Found: ${JSON.stringify(response.toolCalls, null, 2)}`);
+  // PATH A: Native Tool Results
+  if (response.toolResults && response.toolResults.length > 0) {
+    // We need to use Promise.all because we're actually GOING to run the tools now
+    toolResults = await Promise.all(response.toolResults.map(async (tr) => {
+      
+      // If the SDK already ran it, tr.result will exist. 
+      // If it's empty, we force the execution through our loader.
+      let finalResult = tr.result;
+      
+      if (finalResult === undefined) {
+        logger.warn({ tool: tr.toolName }, '[FIX] SDK returned undefined result. Forcing manual execution...');
+        finalResult = await runTool(tr.toolName, tr.args);
+      }
+
+      logger.info(`[TRACE] Final Tool Output: ${tr.toolName} -> ${JSON.stringify(finalResult)}`);
+
+      return {
+        toolName: tr.toolName,
+        result: finalResult,
+        args: tr.args
+      };
+    }));
   }
-
-   logger.info({
-    // cacheHit: false,
-    inputTokens,
-    outputTokens,
-    latencyMs: inferenceLatencyMs,  // Acktual wall time
-    model: supportAgentConfig.model,
-    // temperature: supportAgentConfig.temperature,
-    toolCalls: response.toolCalls?.length || 0
-  }, 'inference_complete');
-
-  // TOOL CALL EXTRACTION
-  // Priority 1: Native tool calls from the AI SDK
-  let toolCall: { tool: string; entityId: string } | null = null;
-
-  if (response.toolCalls && response.toolCalls.length > 0) {
-    const call = response.toolCalls[0];
-
-    // toolName === '0' is a known provider variant — see issue tracker
-    const isLookup = call.toolName === 'entity-lookup' || call.toolName === '0';
-
-    if (isLookup) {
-      // Defensively find the arguments object.
-      // Checks .args (standard AI SDK) OR .input (seen in some provider variants)
-      const args = ((call as any).args || (call as any).input || {}) as any; // 😬😬😬
-      const rawId = args.entityId || args.order_id || args.order_number || args.invoice_id || args.id;
-
-      if (rawId !== undefined) {
-        toolCall = {
-          tool: 'entity-lookup',
-          entityId: String(rawId)
-        };
+  // PATH B: Regex Fallback (Support for local/small models that dump JSON in text)
+  else {
+    const jsonMatch = response.text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        const toolName = parsed.tool || parsed.toolName;
+        if (toolName && registry.find(t => t.name === toolName)) {
+          const args = parsed.parameters || parsed.args || parsed;
+          const result = await runTool(toolName, args);
+          toolResults.push({ toolName, result, args });
+        }
+      } catch (e) {
+        logger.debug('Regex fallback parsing failed.');
       }
     }
   }
 
-  // Priority 2: JSON embedded in text output
-  // REGEX FALLBACK — only if native extraction failed
-  if (!toolCall && text) {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        const validated = toolCallSchema.safeParse(JSON.parse(jsonMatch[0]));
-        if (validated.success) toolCall = validated.data;
-      } catch (_e) { /* Fallback to conversational */ }
+  /** EXECUTION & BROADCAST: Finalize actions and record to the Data Plane. */
+  if (toolResults.length > 0) {
+    for (const tr of toolResults) {
+      yield { type: 'tool_call', timestamp: Date.now(), toolId: tr.toolName, parameters: tr.args };
+
+      session.events.push({
+        type: 'TOOL_RESULT',
+        payload: { toolId: tr.toolName, result: tr.result, args: tr.args },
+        timestamp: Date.now()
+      });
+
+      yield { type: 'tool_result', timestamp: Date.now(), toolId: tr.toolName, result: tr.result };
     }
-  }
 
-  // EXECUTION & BROADCAST
-  if (toolCall) {
-    const { entityId } = toolCall;
-    const toolId = toolCall.tool;
-
-    yield { 'toolName': toolId, type: 'tool_call', timestamp: Date.now(), toolId, parameters: { entityId } };
-
-    // Execute the tool via injected tool adapters
-    const toolAdapter = opts?.tools?.[toolId];
-    if (!toolAdapter) {
-      throw new Error(`No tool adapter provided for ${toolId}`);
-    }
-    const result = await (toolAdapter as any).execute?.({ entityId });
-
-    // BROADCAST tool result to data plane.
-    // This is key to preventing endless loops on re-hydration.
-    session.events.push({
-      type: 'TOOL_RESULT',
-      payload: { toolId, entityId, result },
-      timestamp: Date.now()
-    });
-
-    yield { type: 'tool_result', timestamp: Date.now(), toolId, result };
-
-    // Rebuild with the tool result now included so the final synthesis
-    // prompt reflects the fully updated world state.
-    const updatedGraphContext = rebuildGraph(session.events).serialize();
-    const historyWithResult = buildConversationHistory(session.events);
-
-    // Final Synthesis using the updated tool data
+    const updatedHistory = buildConversationHistory(session.events);
     const finalResponse = await generateText({
       model,
-      system: [
-        protocol.systemPrompt,
-        '### CURRENT KNOWLEDGE_GRAPH\n' +
-        'Do NOT ask the user for information already present here.\n' +
-        updatedGraphContext,
-      ].filter(Boolean).join('\n\n'),
-      prompt: `${historyWithResult}\n\nBased on the above, summarize the situation for the user.`,
-      // temperature: supportAgentConfig.temperature
+      system: systemPrompt,
+      temperature: supportAgentConfig.temperature,
+      prompt: `${updatedHistory}\n\nBased on the tool results above, summarize the current status for the user.`,
     });
-
-    logger.debug(`[DEBUG] ToolCalls found: ${JSON.stringify(response.toolCalls)}`);
-    logger.debug(`[DEBUG] Raw Text found: ${JSON.stringify(response.text)}`);
 
     yield { type: 'final', timestamp: Date.now(), text: finalResponse.text };
   } else {
-    yield { type: 'final', timestamp: Date.now(), text };
+    yield { type: 'final', timestamp: Date.now(), text: response.text.trim() };
   }
+
+  const latencyMs = Math.round(performance.now() - startTime);
+  logger.info({
+    latencyMs,
+    model: supportAgentConfig.model,
+    toolCalls: toolResults.length
+  }, 'inference_complete');
 }
 
 export const supportAgentModelSpec = supportAgentConfig.model;
