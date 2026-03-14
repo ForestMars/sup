@@ -10,9 +10,6 @@ import { formatToolResult, type ToolMeta } from '../style';
 import { client as featureFlags } from '@sup/infra/flags';
 import { repoConfig, validateGitHubCapability } from '#config/repo';
 
-
-
-
 export async function* flaggedSupportAgent(
   userInput: string,
   session: AgentSession,
@@ -21,15 +18,12 @@ export async function* flaggedSupportAgent(
 
   const userId = opts?.userId || session.userId;
 
-  // 1. Check basic token existence and FF in one go
   const githubFlag = await featureFlags.getBooleanValue('github_expert', false, { targetingKey: userId }) 
                      && !!repoConfig.token;
   const runSmokeTest = await featureFlags.getBooleanValue('github_smoke_test', true, { targetingKey: userId });
 
-  // 2. Perform the actual health check if the flag passed
   const isGithubHealthy = githubFlag && await validateGitHubCapability();
 
-  // 3. Define the status string
   const githubStatus = isGithubHealthy ? 'ACTIVE' : (githubFlag ? 'AUTH_FAILED' : 'DISABLED');
 
   const agentOpts = {
