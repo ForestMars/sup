@@ -168,6 +168,8 @@ export async function* supportAgent(
     prompt: fullPrompt,
   });
 
+  logger.debug({ toolCalls: JSON.stringify(response.toolCalls), toolResults: JSON.stringify(response.toolResults) }, 'raw SDK response');
+
   // Unified Tool Result Collection
   let toolResults: { toolName: string; result: any; args: any }[] = [];
 
@@ -178,11 +180,12 @@ export async function* supportAgent(
       
       // If the SDK already ran it, tr.result will exist. 
       // If it's empty, we force the execution through our loader.
-      let finalResult = tr.result;
-      
+      let finalResult = tr.output;
+
       if (finalResult === undefined) {
         logger.warn({ tool: tr.toolName }, '[FIX] SDK returned undefined result. Forcing manual execution...');
-        finalResult = await runTool(tr.toolName, tr.args);
+        const toolCall = response.toolCalls?.find(tc => tc.toolName === tr.toolName);
+        finalResult = await runTool(tr.toolName, toolCall?.args ?? tr.args);
       }
 
       logger.info(`[TRACE] Final Tool Output: ${tr.toolName} -> ${JSON.stringify(finalResult)}`);
