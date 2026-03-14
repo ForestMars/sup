@@ -1,15 +1,14 @@
 {
-  "name": "gh_create_issue",
+  "name": "github/create_issue",
   "description": "Files a new issue in a GitHub repository.",
   "entry": "./index.ts",
   "parameters": {
     "type": "object",
     "properties": {
-      "repo": { "type": "string", "description": "Owner/Repo name" },
       "title": { "type": "string" },
       "body": { "type": "string" },
       "labels": { "type": "array", "items": { "type": "string" } }
     },
-    "required": ["repo", "title"]
+    "required": ["title"]
   }
 }
