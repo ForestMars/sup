@@ -7,11 +7,13 @@ import pino from 'pino';
 import pinoLoki from 'pino-loki';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
+import { AGENT_MODEL } from '@sup/infra/env';
+
 export const pinoStorage = new AsyncLocalStorage<
   Record<string, any>
 >();
 
-const MODEL_NAME = process.env.MODEL_NAME || 'qwen2.5:7b';
+const MODEL_NAME = AGENT_MODEL
 const isTerminal = process.stdout.isTTY;
 const isDev = process.env.NODE_ENV !== 'production';
 const lokiEnabled = process.env.LOKI_ENABLED === 'true';
