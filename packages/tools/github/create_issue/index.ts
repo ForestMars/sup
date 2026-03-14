@@ -1,41 +1,34 @@
 import fetch from "node-fetch";
 
+const token = process.env.GITHUB_TOKEN;
+const owner = process.env.REPO_OWNER;
+const repo = process.env.REPO_NAME;
+
 export interface CreateIssueParams {
-  repo: string; // owner/repo
   title: string;
   body?: string;
   labels?: string[];
 }
 
 export async function createIssue(params: CreateIssueParams) {
-  const { repo, title, body = "", labels = [] } = params;
-
-  if (!repo) {
-    throw new Error("repo parameter is required (owner/repo)");
-  }
+  const { title, body = "", labels = [] } = params;
 
   if (!title) {
     throw new Error("title parameter is required");
   }
 
-  const token = process.env.GITHUB_TOKEN;
-
   if (!token) {
     throw new Error("GITHUB_TOKEN environment variable not set");
   }
 
-  const res = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/vnd.github+json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      title,
-      body,
-      labels
-    })
+    body: JSON.stringify({ title, body, labels })
   });
 
   if (!res.ok) {
@@ -55,6 +48,6 @@ export async function createIssue(params: CreateIssueParams) {
  * Agent entrypoint
  * The agent runner calls this function with tool arguments.
  */
-export default async function run(input: CreateIssueParams) {
+export async function run(input: CreateIssueParams = {} as CreateIssueParams) {
   return await createIssue(input);
 }
