@@ -1,0 +1,28 @@
+/**
+ * @file /config/repo.ts
+ */
+export const repoConfig = {
+  owner: 'ForestMars',
+  repo: 'coffee',
+  token: process.env.GITHUB_TOKEN, // Still pulled from env for security
+};
+
+/**
+ * Basic health check to see if the token actually works
+ */
+export async function validateGitHubCapability(): Promise<boolean> {
+  if (!repoConfig.token) return false;
+  
+  try {
+    // Just a lightweight check to verify the token is valid for this repo
+    const response = await fetch(`https://api.github.com/repos/${repoConfig.owner}/${repoConfig.repo}`, {
+      headers: {
+        Authorization: `Bearer ${repoConfig.token}`,
+        'User-Agent': 'sup-agent-health-check'
+      }
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}

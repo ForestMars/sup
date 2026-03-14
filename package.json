@@ -2,6 +2,9 @@
   "name": "'Sup",
   "type": "module",
   "version": "0.0.3",
+  "imports": {
+    "#config/*": "./config/*"
+  },
   "workspaces": [
     "apps/cli",
     "packages/tsconfig",
