@@ -9,6 +9,6 @@
       "body": { "type": "string" },
       "labels": { "type": "array", "items": { "type": "string" } }
     },
-    "required": ["repo", "title"]
+    "required": ["title"]
   }
 }
