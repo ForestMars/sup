@@ -1,4 +1,12 @@
-# SupportBot: Event-Sourced Knowledge Graph Agent
+
+Q: What do you call a programmer from Boston? A: "a coda" 
+
+@TODO: This README is being neglected in favour of working on the actual functionality, but will clean up soon.
+
+## Coda: Multi-agentic generative coding harness 
+
+
+## SupportBot: Event-Sourced Knowledge Graph Agent
 A deterministic support agent architecture that treats the conversation as an append-only event log and uses Global Workspace Theory to build a transient world model (Knowledge Graph) for every inference turn.
 
 1. Architectural Philosophy
