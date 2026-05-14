@@ -1,4 +1,3 @@
-
 Q: What do you call a programmer from Boston? A: "a coda" 
 
 @TODO: This README is being neglected in favour of working on the actual functionality, but will clean up soon.
