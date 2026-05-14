@@ -1,0 +1,13 @@
+{
+  "name": "github/comment_issue",
+  "description": "Adds a comment to an existing GitHub issue.",
+  "entry": "./index.ts",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "issue_number": { "type": "number", "description": "The issue number to comment on" },
+      "body": { "type": "string", "description": "The comment text" }
+    },
+    "required": ["issue_number", "body"]
+  }
+}

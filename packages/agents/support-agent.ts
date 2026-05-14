@@ -182,6 +182,7 @@ export async function* supportAgent(
       // If it's empty, we force the execution through our loader.
       let finalResult = tr.output;
 
+      logger.debug({ toolName: tr.toolName, input: tr.input, output: tr.output }, 'tool result debug');
       if (finalResult === undefined) {
         logger.warn({ tool: tr.toolName }, '[FIX] SDK returned undefined result. Forcing manual execution...');
         const toolCall = response.toolCalls?.find(tc => tc.toolName === tr.toolName);

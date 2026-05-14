@@ -24,10 +24,6 @@
     "parameters": {
       "type": "object",
       "properties": {
-        "repo": {
-          "type": "string",
-          "description": "Owner/Repo name"
-        },
         "title": {
           "type": "string"
         },
@@ -42,10 +38,59 @@
         }
       },
       "required": [
-        "repo",
         "title"
       ]
     },
     "importPath": "github/create_issue/index.ts"
+  },
+  {
+    "name": "github/search_issues",
+    "description": "Search for GitHub issues in the repository.",
+    "entry": "./index.ts",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search query"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "open",
+            "closed",
+            "all"
+          ],
+          "description": "Issue state filter"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    },
+    "importPath": "github/search_issues/index.ts"
+  },
+  {
+    "name": "github/comment_issue",
+    "description": "Adds a comment to an existing GitHub issue.",
+    "entry": "./index.ts",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "issue_number": {
+          "type": "number",
+          "description": "The issue number to comment on"
+        },
+        "body": {
+          "type": "string",
+          "description": "The comment text"
+        }
+      },
+      "required": [
+        "issue_number",
+        "body"
+      ]
+    },
+    "importPath": "github/comment_issue/index.ts"
   }
 ]
