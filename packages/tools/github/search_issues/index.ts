@@ -16,10 +16,11 @@ export interface SearchIssuesParams {
 export async function searchIssues(params: SearchIssuesParams) {
   const { query, state = "open" } = params;
 
-  if (!query) throw new Error("query parameter is required");
+  // if (!query) throw new Error("query parameter is required");
   if (!token) throw new Error("GITHUB_TOKEN environment variable not set");
 
-  const q = encodeURIComponent(`${query} repo:${owner}/${repo} state:${state}`);
+  const q = encodeURIComponent(`is:issue repo:${owner}/${repo}${query ? ` ${query}` : ""} is:${state === "all" ? "" : state}`.trim());
+  // const q = encodeURIComponent(`is:issue repo:${owner}/${repo} ${query}`);
   const res = await fetch(`https://api.github.com/search/issues?q=${q}`, {
     headers: {
       Authorization: `Bearer ${token}`,
