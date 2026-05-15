@@ -4,8 +4,9 @@
  */
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { PROJECT_ROOT } from '@coda/lib';
 
-const CWD = process.cwd();
+const CWD = PROJECT_ROOT;
 
 export async function run(args: { path: string }): Promise<{ content: string; path: string }> {
   const { path: rawPath } = args;
