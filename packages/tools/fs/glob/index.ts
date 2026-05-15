@@ -4,7 +4,7 @@
  */
 import { readdir, stat } from 'node:fs/promises';
 import { join, resolve, relative } from 'node:path';
-import { PROJECT_ROOT } from '@coda/lib';
+import { PROJECT_ROOT } from '@sup/lib';
 
 const CWD = PROJECT_ROOT;
 

@@ -3,7 +3,7 @@
  * @description Run a shell command in the working directory.
  */
 import { spawn } from 'node:child_process';
-import { PROJECT_ROOT } from '@coda/lib';
+import { PROJECT_ROOT } from '@sup/lib';
 
 const CWD = PROJECT_ROOT;
 

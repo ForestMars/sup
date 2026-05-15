@@ -2,7 +2,7 @@
  * @file /packages/tools/github/search_issues/index.ts
  * @description Search GitHub issues.
  */
-import fetch from "node-fetch";
+// import fetch from "node-fetch"; // no cargo culting pls
 
 const token = process.env.GITHUB_TOKEN;
 const owner = process.env.REPO_OWNER;
