@@ -3,8 +3,9 @@
  * @description Run a shell command in the working directory.
  */
 import { spawn } from 'node:child_process';
+import { PROJECT_ROOT } from '@coda/lib';
 
-const CWD = process.cwd();
+const CWD = PROJECT_ROOT;
 
 const DENY = [/rm\s+-rf\s+\//, /sudo/, />\s*\/etc/, />\s*\/usr/, />\s*\/bin/];
 
