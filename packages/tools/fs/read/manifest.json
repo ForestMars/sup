@@ -1,0 +1,15 @@
+{
+  "name": "fs/read",
+  "description": "Read the content of a file. The path must be relative to the project root, e.g. src/main.ts or README.md.",
+  "entry": "index.ts",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "type": "string",
+        "description": "Relative path from the project root, e.g. src/main.ts"
+      }
+    },
+    "required": ["path"]
+  }
+}
