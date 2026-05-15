@@ -4,8 +4,9 @@
  */
 import { readdir, stat } from 'node:fs/promises';
 import { join, resolve, relative } from 'node:path';
+import { PROJECT_ROOT } from '@coda/lib';
 
-const CWD = process.cwd();
+const CWD = PROJECT_ROOT;
 
 async function walk(dir: string, pattern: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
