@@ -5,7 +5,6 @@
   "dependencies": {
     "@sup/domain": "workspace:*",
     "@sup/infra": "workspace:*",
-    "@sup/tools": "workspace:*",
     "@sup/types": "workspace:*"
   }
 }
