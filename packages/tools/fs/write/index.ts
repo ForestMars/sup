@@ -5,8 +5,9 @@
  */
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join, resolve, normalize } from 'node:path';
+import { PROJECT_ROOT } from '@coda/lib';
 
-const CWD = process.cwd();
+const CWD = PROJECT_ROOT;
 
 export async function run(args: { path: string; content: string }): Promise<{ success: boolean; path: string }> {
   const { path: rawPath, content } = args;
