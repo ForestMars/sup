@@ -22,7 +22,7 @@ const codingAgentConfig: AgentConfig = {
   model: process.env.CODING_AGENT_MODEL || DEFAULT_MODEL,
   instructions: '',
   temperature: TEMPERATURE,
-  tools?: [],
+  tools: [],
 };
 
 // FS tools only — the coding agent doesn't need support tools
