@@ -6,5 +6,10 @@
     "@sup/domain": "workspace:*",
     "@sup/infra": "workspace:*",
     "@sup/types": "workspace:*"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./protocol-resolver": "./protocol-resolver.ts"
+    
   }
 }

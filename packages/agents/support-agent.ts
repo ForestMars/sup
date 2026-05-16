@@ -36,7 +36,7 @@ const supportAgentConfig: AgentConfig = {
   model: process.env.SUPPORT_AGENT_MODEL || DEFAULT_MODEL,
   instructions,
   temperature: TEMPERATURE,
-  tools?: []
+  tools: []
 };
 
 const toolCallSchema = z.object({

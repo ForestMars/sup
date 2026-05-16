@@ -6,8 +6,7 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-
-      "@sup/lib": ["../lib/dist/index.d.ts"]
+      "@sup/lib": ["../lib/index.ts"]
     },
     "types": ["node", "bun-types"],
     "resolveJsonModule": true
