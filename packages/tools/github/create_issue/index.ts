@@ -1,4 +1,8 @@
-import fetch from "node-fetch";
+/**
+ * @file /packages/tools/github/creat_issue/index.ts
+ * @description Create GitHub issue.
+ */
+// import fetch from "node-fetch"; // no cargo culting pls
 
 const token = process.env.GITHUB_TOKEN;
 const owner = process.env.REPO_OWNER;

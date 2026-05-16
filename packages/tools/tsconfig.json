@@ -4,8 +4,17 @@
     "composite": true,
     "rootDir": "./",
     "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@sup/lib": ["../lib/index.ts"]
+    },
+    "types": ["node", "bun-types"],
+    "resolveJsonModule": true
   },
-  "references": [{ "path": "../domain" }],
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist"],
+  "references": [ 
+    {"path": "../domain"},
+    {"path": "../lib" }
+  ],
+  "include": ["**/*.ts", "registry.json"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/test.ts"]
 }

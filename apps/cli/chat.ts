@@ -18,16 +18,31 @@ import {
 
 import { logger } from '@sup/infra/logger';
 import type { AgentStep } from '@sup/types/agent-types';
-import {
-  supportAgent,
-  supportAgentModelSpec,
-} from '@sup/agents/support-agent';
+
+
+// FIXME: This is fugly, obvi. 
+const AGENT = process.env.AGENT || 'support';
+const { agent, modelSpec } = await (async () => {
+  if (AGENT === 'coding') {
+    const { codingAgent, codingAgentModelSpec } = await import('@sup/agents/coding-agent');
+    return { agent: codingAgent, modelSpec: codingAgentModelSpec };
+  }
+  const { supportAgent, supportAgentModelSpec } = await import('@sup/agents/support-agent');
+  return { agent: supportAgent, modelSpec: supportAgentModelSpec };
+})();
+
+
 import { ProtocolResolver } from '@sup/lib/protocol-resolver';
 import { adapters } from '@sup/tools';
 import { JsonFileProvider } from '@sup/infra/adapters/JsonFileProvider';
 
 const { OutputAdapters } =
   await import('@sup/agents/adapters/output-adapters');
+
+
+
+
+
 
 const providers = [];
 if (process.env.POSTHOG_API_KEY) {
@@ -56,6 +71,10 @@ const multiProvider = new MultiProvider(
 );
 await OpenFeature.setProviderAndWait(multiProvider);
 
+
+
+
+
 const fflags = OpenFeature.getClient();
 
 // const activeAdapters = [];
@@ -66,7 +85,9 @@ const fflags = OpenFeature.getClient();
  * clean mocking and to prevent top-level sidffects during testing.
  */
 export async function startChat() {
-  logger.debug(`Loaded model: ${supportAgentModelSpec}\n`);
+  // logger.debug(`Loaded model: ${supportAgentModelSpec}\n`);
+  logger.debug(`Agent: ${AGENT}`);
+logger.debug(`Model: ${modelSpec}\n`);
 
   const activeAdapters = (
     await Promise.all(
@@ -106,7 +127,13 @@ export async function startChat() {
         let finalText = '';
 
         // Create base generator
-        let generator = supportAgent(userInput, session, {
+
+        /* let generator = supportAgent(userInput, session, {
+          resolver: ProtocolResolver,
+          tools: adapters,
+        });
+        */
+        let generator = agent(userInput, session, {
           resolver: ProtocolResolver,
           tools: adapters,
         });

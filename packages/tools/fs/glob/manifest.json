@@ -1,0 +1,15 @@
+{
+  "name": "fs/glob",
+  "description": "List files in the project matching a pattern, e.g. *.ts or *.json.",
+  "entry": "index.ts",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "pattern": {
+        "type": "string",
+        "description": "Glob pattern to match, e.g. *.ts or src/**/*.ts"
+      }
+    },
+    "required": ["pattern"]
+  }
+}
