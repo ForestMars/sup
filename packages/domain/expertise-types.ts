@@ -5,7 +5,7 @@ export interface Protocol {
   key?: string;
   name?: string;
   skillPath: string;
-  tools: any[];
+  tools?: any[];
   styleOverride?: string;
   priority?: number;
 }
@@ -13,7 +13,7 @@ export interface Protocol {
 export interface ExpertStrategy {
   key: string;
   skillPath: string;
-  tools: any[];
+  tools?: any[];
   rules?: string;
   systemPrompt?: string;
   name?: string;
