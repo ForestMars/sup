@@ -1,76 +1,114 @@
 /**
  * @file protocol-resolver.ts
- * @description Pure expertise/domain router.
- *
- * This module is intentionally responsible ONLY for selecting
- * operational expertise based on runtime context.
- *
- * It does NOT:
- * - load tools
- * - compose prompts
- * - load markdown
- * - apply styles
- * - construct runtimes
+ * @description Centralized Protocol Resolver for Dynamic Capability Discovery.
+ * Determines which operational protocol (skill + toolset) to engage based on the current graph context and active domain.
+ * This is the 🧠 of the agent's capability discovery mechanism, enabling it to adapt its behavior dynamically.
  */
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
+/*  @FIXME: protocol-resolver should not depend on tools. 
+import {
+  entityLookupTool,
+  resolutionTools,
+} from '@sup/tools/order-tools';
+*/
+
+import { style } from '@sup/agents/style/';
+import { logger } from '@sup/infra/logger';
+import { Protocol } from '@sup/domain/expertise-types';
 import type {
   ExpertStrategy,
   ExpertiseResolverPort,
 } from '@sup/domain/expertise-types';
 
-/**
- * Expertise registry.
- *
- * NOTE:
- * These are DOMAIN-LOCAL expertise descriptors,
- * not globally shared framework concepts.
- */
-export const Registry = {
+// 1. PATH CONFIGURATION
+// Ensure this matches your actual project structure (e.g., /src/agents/skills)
+const SKILLS_DIR = join(
+  process.cwd(),
+  'src',
+  'agents',
+  'skills',
+);
+
+// 2. THE REGISTRY STRUCT
+export const Registry: Record<string, Protocol> = {
   resolution: {
     key: 'resolution',
     name: 'Conflict Resolution',
     skillPath: 'entity-resolution.md',
-    rules:
-      'Prioritize resolving conflicting entity state before continuing.',
+    // tools: [entityLookupTool, ...resolutionTools],
+    styleOverride:
+      'URGENT: Prioritize resolving data conflicts before answering general questions.',
   },
-
   billing: {
     key: 'billing',
-    name: 'Billing',
+    name: 'Billing Domain',
     skillPath: 'billing.md',
+    // tools: [entityLookupTool],
   },
-
   default: {
     key: 'default',
     name: 'General Support',
     skillPath: '',
-  },
-} satisfies Record<string, ExpertStrategy>;
-
-export const ProtocolResolver: ExpertiseResolverPort = {
-  resolve(graphContext: string): ExpertStrategy {
-    /**
-     * Expertise routing ONLY.
-     * No runtime composition.
-     */
-
-    if (graphContext.includes('UNRESOLVED_CONFLICT')) {
-      return Registry.resolution;
-    }
-
-    if (graphContext.includes('BILLING')) {
-      return Registry.billing;
-    }
-
-    return Registry.default;
+    // tools: [entityLookupTool],
   },
 };
 
 /**
- * Backwards-compatible helper.
+ * resolveProtocol
+ * Core 🧠 for Capability Discovery.
  */
-export function resolveProtocol(
-  graphContext: string,
-): ExpertStrategy {
+// Implement the ExpertiseResolverPort so this module can be injected
+export const ProtocolResolver: ExpertiseResolverPort = {
+  resolve(graphContext: string): ExpertStrategy {
+    // Logic Plane: Determine which protocol to engage
+    let selection = Registry.default;
+
+    if (graphContext.includes('UNRESOLVED_CONFLICT')) {
+      selection = Registry.resolution;
+    }
+
+    // Implementation Plane: Load the actual markdown content lazily
+    let skillContent = '';
+    if (
+      selection.skillPath &&
+      selection.skillPath.trim() !== ''
+    ) {
+      try {
+        const fullPath = join(
+          SKILLS_DIR,
+          selection.skillPath,
+        );
+        skillContent = readFileSync(fullPath, 'utf-8');
+      } catch (_error) {
+        logger.error(
+          `[PROTOCOL_ERROR] Failed to load skill at ${selection.skillPath}`,
+        );
+      }
+    }
+
+    const systemPrompt = [
+      style,
+      selection.styleOverride || '',
+      skillContent ? '## OPERATIONAL PROTOCOL' : '',
+      skillContent,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    return {
+      key: selection.key || 'default',
+      skillPath: selection.skillPath,
+      tools: selection.tools,
+      rules: selection.styleOverride || '',
+      systemPrompt,
+      name: selection.name,
+    };
+  },
+};
+
+// Backwards-compatible helper
+export function resolveProtocol(graphContext: string) {
   return ProtocolResolver.resolve(graphContext);
 }
